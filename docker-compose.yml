@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:18.3
+    container_name: feedbackFlowDB
+    mem_limit: 1536MB
+    mem_reservation: 1024MB
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: [SET USERNAME HERE]
+      POSTGRES_PASSWORD: [SET PASSWORD HERE]
+    volumes:
+      - ./data:/var/lib/postgresql
+    ports:
+      - "5434:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:9.13
+    container_name: feedbackFlowPgadmin
+    mem_reservation: 512MB
+    mem_limit: 1024MB
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./pgadmin-data:/pgadmin
+    ports:
+      - "8082:80"
+    networks:
+      - backend
+    environment:
+      PGADMIN_DEFAULT_EMAIL: [SET EMAIL HERE]
+      PGADMIN_DEFAULT_PASSWORD: [SET PASSWORD HERE]
+
+networks:
+  backend:
+    name: backend
+    internal: false # in production, it should be true if you don't want to expose this network to the outside world
+    driver: bridge

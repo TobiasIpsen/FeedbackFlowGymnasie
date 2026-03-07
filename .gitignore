@@ -4,6 +4,7 @@
 .env.*.local
 appsettings.Development.json
 appsettings.Production.json
+appsettings.*.json
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,git,aspnetcore,macos,windows,node,react
