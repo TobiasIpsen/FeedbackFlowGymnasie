@@ -15,7 +15,7 @@ public class ContentType
 
     public DateTimeOffset IsDeleted { get; set; }
 
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<QuestionAnswer> QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+    public ICollection<QuestionAnswer> QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 }

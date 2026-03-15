@@ -18,5 +18,5 @@ public class Appendix
 
     public int QuestionId { get; set; }
 
-    public virtual Question Question { get; set; } = null!;
+    public Question Question { get; set; } = null!;
 }

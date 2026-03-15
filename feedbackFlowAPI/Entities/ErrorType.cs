@@ -11,7 +11,7 @@ public class ErrorType
 
     public int? UserId { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 }

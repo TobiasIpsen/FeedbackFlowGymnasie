@@ -27,25 +27,25 @@ public class Question
     public StandardQuestion StandardQuestion { get; set; }
 
 
-    public virtual ICollection<Appendix>? Appendices { get; set; } = new List<Appendix>();
+    public ICollection<Appendix>? Appendices { get; set; } = new List<Appendix>();
 
     public int? CourseId { get; set; }
 
-    public virtual Course Course { get; set; } = null!;
+    public Course Course { get; set; } = null!;
 
-    public virtual ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+    public ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 
-    public virtual ICollection<QuestionCollection>? QuestionCollections { get; set; } = new List<QuestionCollection>();
+    public ICollection<QuestionCollection>? QuestionCollections { get; set; } = new List<QuestionCollection>();
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
     public int UserId { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public User User { get; set; } = null!;
 
-    public virtual ICollection<QuestionQuestionSet> QuestionSet { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet> QuestionSet { get; set; } = new List<QuestionQuestionSet>();
 
-    public virtual ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
+    public ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
 
-    public virtual ICollection<ContentType>? ContentTypes { get; set; } = new List<ContentType>();
+    public ICollection<ContentType>? ContentTypes { get; set; } = new List<ContentType>();
 }

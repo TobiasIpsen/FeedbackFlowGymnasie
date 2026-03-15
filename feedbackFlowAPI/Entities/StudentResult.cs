@@ -25,13 +25,13 @@ public class StudentResult
 
     public int QuestionSetId { get; set; }
 
-    public virtual Question Question { get; set; } = null!;
+    public Question Question { get; set; } = null!;
 
-    public virtual QuestionSet QuestionSet { get; set; } = null!;
+    public QuestionSet QuestionSet { get; set; } = null!;
 
-    public virtual User Teacher { get; set; } = null!;
+    public User Teacher { get; set; } = null!;
 
-    public virtual User Student { get; set; } = null!;
+    public User Student { get; set; } = null!;
 
-    public virtual ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
+    public ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
 }

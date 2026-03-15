@@ -20,11 +20,11 @@ public class QuestionSet
 
     public int TeacherId { get; set; }
 
-    public virtual User Teacher { get; set; } = null!;
+    public User Teacher { get; set; } = null!;
 
-    public virtual ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+    public ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
-    public virtual ICollection<QuestionQuestionSet> Question { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet> Question { get; set; } = new List<QuestionQuestionSet>();
 }

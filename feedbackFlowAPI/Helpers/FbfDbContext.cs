@@ -14,33 +14,33 @@ public partial class FbfDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Appendix> Appendices { get; set; }
+    public DbSet<Appendix> Appendices { get; set; }
 
-    public virtual DbSet<Class> Classes { get; set; }
+    public DbSet<Class> Classes { get; set; }
 
-    public virtual DbSet<ContentType> ContentTypes { get; set; }
+    public DbSet<ContentType> ContentTypes { get; set; }
 
-    public virtual DbSet<Course> Courses { get; set; }
+    public DbSet<Course> Courses { get; set; }
 
-    public virtual DbSet<ErrorType> Errortypes { get; set; }
+    public DbSet<ErrorType> Errortypes { get; set; }
 
-    public virtual DbSet<Question> Questions { get; set; }
+    public DbSet<Question> Questions { get; set; }
 
-    public virtual DbSet<QuestionAnswer> QuestionAnswers { get; set; }
+    public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
 
-    public virtual DbSet<QuestionCollection> QuestionCollections { get; set; }
+    public DbSet<QuestionCollection> QuestionCollections { get; set; }
 
-    public virtual DbSet<QuestionSet> QuestionSets { get; set; }
+    public DbSet<QuestionSet> QuestionSets { get; set; }
 
-    public virtual DbSet<QuestionQuestionSet> QuestionQuestionSets { get; set; }
+    public DbSet<QuestionQuestionSet> QuestionQuestionSets { get; set; }
 
-    public virtual DbSet<StudentResult> StudentResults { get; set; }
+    public DbSet<StudentResult> StudentResults { get; set; }
 
-    public virtual DbSet<Subject> Subjects { get; set; }
+    public DbSet<Subject> Subjects { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
-    public virtual DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -16,17 +16,17 @@ public class User
 
     public DateTimeOffset IsDeleted { get; set; }
 
-    public virtual ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
+    public ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
 
-    public virtual ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
+    public ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
 
-    public virtual ICollection<Question>? Questions { get; set; } = new List<Question>();
+    public ICollection<Question>? Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<QuestionSet>? QuestionSets { get; set; } = new List<QuestionSet>();
+    public ICollection<QuestionSet>? QuestionSets { get; set; } = new List<QuestionSet>();
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
-    public virtual ICollection<StudentResult>? TeacherStudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? TeacherStudentResults { get; set; } = new List<StudentResult>();
 
-    public virtual ICollection<Class>? Classes { get; set; } = new List<Class>();
+    public ICollection<Class>? Classes { get; set; } = new List<Class>();
 }

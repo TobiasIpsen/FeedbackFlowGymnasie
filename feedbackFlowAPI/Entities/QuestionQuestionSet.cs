@@ -10,8 +10,8 @@
 
         public Subject Subject { get; set; } = null!;
 
-        public virtual Question Question { get; set; } = null!;
+        public Question Question { get; set; } = null!;
         
-        public virtual QuestionSet QuestionSet { get; set; } = null!;
+        public QuestionSet QuestionSet { get; set; } = null!;
     }
 }

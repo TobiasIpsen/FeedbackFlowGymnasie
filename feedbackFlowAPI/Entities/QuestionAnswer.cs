@@ -23,9 +23,9 @@ public class QuestionAnswer
     /// </summary>
     public int QuestionSetId { get; set; }
 
-    public virtual Question Question { get; set; } = null!;
+    public Question Question { get; set; } = null!;
 
-    public virtual QuestionSet? QuestionSet { get; set; } = null!;
+    public QuestionSet? QuestionSet { get; set; } = null!;
 
-    public virtual ICollection<ContentType> ContentTypes { get; set; } = new List<ContentType>();
+    public ICollection<ContentType> ContentTypes { get; set; } = new List<ContentType>();
 }

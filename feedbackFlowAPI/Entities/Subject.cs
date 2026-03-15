@@ -13,7 +13,7 @@ public class Subject
     /// </summary>
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<Question>? Questions { get; set; } = new List<Question>();
+    public ICollection<Question>? Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<QuestionQuestionSet>? QuestionQuestionSet { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet>? QuestionQuestionSet { get; set; } = new List<QuestionQuestionSet>();
 }
