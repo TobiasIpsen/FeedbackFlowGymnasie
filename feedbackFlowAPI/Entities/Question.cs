@@ -8,19 +8,24 @@ public class Question
 {
     public int Id { get; set; }
 
+    public string ImgSrc { get; set; } = null!;
+
     public string Points { get; set; } = null!;
 
     public bool IsDeleted { get; set; }
 
-    public QuestionType QuestionType { get; set; }
+    public ExamType ExamType { get; set; }
 
     public ClassLevel ClassLevel { get; set; }
 
-    public int? UserId { get; set; }
+    public QuestionDifficulty QuestionDifficulity { get; set; }
 
-    public int? CourseId { get; set; }
+    public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
 
-    public int? QuestionId { get; set; }
+    public Education Eudcation { get; set; }
+
+    public StandardQuestion StandardQuestion { get; set; }
+
 
     public virtual ICollection<Appendix>? Appendices { get; set; } = new List<Appendix>();
 
