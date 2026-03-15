@@ -23,7 +23,11 @@ public class User
 
     public virtual ICollection<Question>? Questions { get; set; } = new List<Question>();
 
+    public virtual ICollection<QuestionSet>? QuestionSets { get; set; } = new List<QuestionSet>();
+
     public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+
+    public virtual ICollection<StudentResult>? TeacherStudentResults { get; set; } = new List<StudentResult>();
 
     public virtual ICollection<Class>? Classes { get; set; } = new List<Class>();
 }

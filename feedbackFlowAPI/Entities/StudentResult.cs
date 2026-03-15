@@ -17,7 +17,9 @@ public class StudentResult
 
     public bool IsDeleted { get; set; }
 
-    public int? UserId { get; set; }
+    public int? TeacherId { get; set; }
+
+    public int? StudentId { get; set; }
 
     public int QuestionId { get; set; }
 
@@ -27,7 +29,9 @@ public class StudentResult
 
     public virtual QuestionSet QuestionSet { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual User Teacher { get; set; } = null!;
+
+    public virtual User Student { get; set; } = null!;
 
     public virtual ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
 }
