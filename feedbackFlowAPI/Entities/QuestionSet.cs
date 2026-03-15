@@ -22,5 +22,5 @@ public class QuestionSet
 
     public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public virtual ICollection<QuestionQuestionSet> Question { get; set; } = new List<QuestionQuestionSet>();
 }

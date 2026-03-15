@@ -29,11 +29,9 @@ public class Question
 
     public virtual ICollection<Appendix>? Appendices { get; set; } = new List<Appendix>();
 
+    public int? CourseId { get; set; }
+
     public virtual Course Course { get; set; } = null!;
-
-    public virtual ICollection<Question> InverseQuestionNavigation { get; set; } = new List<Question>();
-
-    public virtual Question? QuestionNavigation { get; set; }
 
     public virtual ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 
@@ -41,9 +39,11 @@ public class Question
 
     public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
+    public int UserId { get; set; }
+
     public virtual User User { get; set; } = null!;
 
-    public virtual ICollection<QuestionSet>? QuestionSets { get; set; } = new List<QuestionSet>();
+    public virtual ICollection<QuestionQuestionSet> QuestionSet { get; set; } = new List<QuestionQuestionSet>();
 
     public virtual ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
 
