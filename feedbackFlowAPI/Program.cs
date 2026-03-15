@@ -36,7 +36,7 @@ namespace feedbackFlowAPI
                         o.MapEnum<Visibility>("visibility");
                         o.MapEnum<QuestionDifficulty>("question_difficulty");
                         o.MapEnum<QuestionMethodRequirement>("question_method_requirement");
-                        o.MapEnum<Education>("eudcation");
+                        o.MapEnum<Education>("education");
                         o.MapEnum<QuestionContext>("question_context");
                         o.MapEnum<StandardQuestion>("standard_question");
                         o.MapEnum<NewOldSystem>("new_old_system");

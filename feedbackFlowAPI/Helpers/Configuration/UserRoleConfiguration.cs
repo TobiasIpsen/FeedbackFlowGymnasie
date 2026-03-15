@@ -9,14 +9,20 @@ namespace feedbackFlowAPI.Helpers.Configuration
     {
         public void Configure(EntityTypeBuilder<UserRole> entity)
         {
-            entity.HasKey(e => e.Name).HasName("userroles_pkey");
+            entity.HasKey(e => e.Id).HasName("userroles_pkey");
 
             entity.ToTable("user_roles");
 
+            entity.Property(e => e.Id)
+                .HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+
             entity.HasData(
-                new UserRole { Name = "Admin" },
-                new UserRole { Name = "Teacher" },
-                new UserRole { Name = "Student" }
+                new UserRole { Id = 1, Name = "Admin" },
+                new UserRole { Id = 2, Name = "Teacher" },
+                new UserRole { Id = 3, Name = "Student" }
             );
         }
     }

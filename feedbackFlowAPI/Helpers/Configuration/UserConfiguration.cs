@@ -15,20 +15,17 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
-            entity.Property(e => e.Email)
-                .HasColumnType("character varying")
-                .HasColumnName("email");
             entity.Property(e => e.Firstname)
                 .HasColumnType("character varying")
                 .HasColumnName("first_name");
-            entity.Property(e => e.IsDeleted).
-                HasColumnName("is_deleted");
             entity.Property(e => e.Lastname)
                 .HasColumnType("character varying")
                 .HasColumnName("last_name");
-            entity.Property(e => e.UserRole)
-                .HasColumnType("user_role")
-                .HasColumnName("user_role");
+            entity.Property(e => e.Email)
+                .HasColumnType("character varying")
+                .HasColumnName("email");
+            entity.Property(e => e.DeletedAt).
+                HasColumnName("deleted_at");
         }
     }
 }

@@ -15,27 +15,27 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
-            entity.Property(e => e.CreatedDate)
-                .HasColumnName("created_date");
-            entity.Property(e => e.IsDeleted)
-                .HasColumnName("is_deleted");
+            entity.Property(e => e.TeacherPoint)
+                .HasColumnType("character varying")
+                .HasColumnName("teacher_point");
+            entity.Property(e => e.TeacherFeedback)
+                .HasColumnType("character varying")
+                .HasColumnName("teacher_feedback");
+            entity.Property(e => e.StudentSelfAssessmentPoints)
+                .HasColumnType("character varying")
+                .HasColumnName("student_self_assessment_points");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnName("deleted_at");
+            entity.Property(e => e.TeacherId)
+                .HasColumnName("teacher_id");
+            entity.Property(e => e.StudentId)
+                .HasColumnName("student_id");
             entity.Property(e => e.QuestionId)
                 .HasColumnName("question_id");
             entity.Property(e => e.QuestionSetId)
                 .HasColumnName("question_set_id");
-            entity.Property(e => e.StudentSelfAssessmentPoints)
-                .HasColumnType("character varying")
-                .HasColumnName("student_self_assessment_points");
-            entity.Property(e => e.TeacherFeedback)
-                .HasColumnType("character varying")
-                .HasColumnName("teacher_feedback");
-            entity.Property(e => e.TeacherPoint)
-                .HasColumnType("character varying")
-                .HasColumnName("teacher_point");
-            entity.Property(e => e.StudentId)
-                .HasColumnName("student_id");
-            entity.Property(e => e.TeacherId)
-                .HasColumnName("teacher_id");
 
             entity.HasOne(d => d.Question)
                 .WithMany(p => p.StudentResults)

@@ -9,5 +9,5 @@ public partial class QuestionAnswerDTO
 
     public string? Url { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers.Configuration;
+using feedbackFlowAPI.DTOs;
 
 namespace feedbackFlowAPI.Helpers;
 
@@ -22,8 +23,6 @@ public partial class FbfDbContext : DbContext
 
     public DbSet<Course> Courses { get; set; }
 
-    public DbSet<ErrorType> Errortypes { get; set; }
-
     public DbSet<Question> Questions { get; set; }
 
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
@@ -42,6 +41,8 @@ public partial class FbfDbContext : DbContext
 
     public DbSet<UserRole> UserRoles { get; set; }
 
+    public DbSet<Mistake> Mistakes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -59,7 +60,6 @@ public partial class FbfDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ClassConfiguration());
         modelBuilder.ApplyConfiguration(new ContentTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CourseConfiguration());
-        modelBuilder.ApplyConfiguration(new ErrorTypeConfiguration());
         modelBuilder.ApplyConfiguration(new QuestionConfiguration());
         modelBuilder.ApplyConfiguration(new QuestionAnswerConfiguration());
         modelBuilder.ApplyConfiguration(new QuestionCollectionConfiguration());
@@ -68,6 +68,8 @@ public partial class FbfDbContext : DbContext
         modelBuilder.ApplyConfiguration(new StudentResultConfiguration());
         modelBuilder.ApplyConfiguration(new SubjectConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new MistakeConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
     }

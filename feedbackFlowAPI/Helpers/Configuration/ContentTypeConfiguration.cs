@@ -15,18 +15,18 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
-            entity.Property(e => e.IsDeleted)
-                .HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnName("deleted_at");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
 
             entity.HasData(
-                new ContentType { Name = "Text" },
-                new ContentType { Name = "Algebraic" },
-                new ContentType { Name = "Graph" },
-                new ContentType { Name = "Figure" },
-                new ContentType { Name = "Table" }
+                new ContentType { Id = 1, Name = "Text" },
+                new ContentType { Id = 2, Name = "Algebraic" },
+                new ContentType { Id = 3, Name = "Graph" },
+                new ContentType { Id = 4, Name = "Figure" },
+                new ContentType { Id = 5, Name = "Table" }
             );
         }
     }

@@ -16,7 +16,7 @@ public class Class
 
     public ClassLevel ClassLevel { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public int CourseId { get; set; }
 

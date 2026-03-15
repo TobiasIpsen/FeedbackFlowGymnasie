@@ -14,7 +14,7 @@ public class QuestionAnswer
 
     public Visibility Visibility { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public int QuestionId { get; set; }
 

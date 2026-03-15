@@ -36,7 +36,7 @@ namespace feedbackFlowAPI.Helpers
     }
 
     /// <summary>
-    /// If a question needs sopmething specific or not.
+    /// If a question needs something specific or not.
     /// ApplyFormula (Anvend formel), 
     /// SpecificMethod (Bestemt metode),
     /// NoRequirement (Ingen krav)

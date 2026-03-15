@@ -17,8 +17,8 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnName("id");
             entity.Property(e => e.CourseId)
                 .HasColumnName("course_id");
-            entity.Property(e => e.IsDeleted)
-                .HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnName("deleted_at");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");

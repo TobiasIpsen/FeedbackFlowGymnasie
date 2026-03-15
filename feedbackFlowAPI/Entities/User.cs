@@ -14,11 +14,9 @@ public class User
 
     public string Email { get; set; } = null!;
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
-
-    public ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
 
     public ICollection<Question>? Questions { get; set; } = new List<Question>();
 

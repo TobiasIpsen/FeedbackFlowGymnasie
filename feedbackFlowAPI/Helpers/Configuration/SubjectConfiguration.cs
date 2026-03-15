@@ -20,13 +20,13 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnName("subject");
 
             entity.HasData(
-                new Subject { Name = "Combinatorics" },
-                new Subject { Name = "Differential Calculus" },
-                new Subject { Name = "Quadratic polynomial" },
-                new Subject { Name = "Regression" },
-                new Subject { Name = "Exponential function" },
-                new Subject { Name = "Binomial distribution" }
-            )
+                new Subject { Id = 1, Name = "Combinatorics" },
+                new Subject { Id = 2, Name = "Differential Calculus" },
+                new Subject { Id = 3, Name = "Quadratic polynomial" },
+                new Subject { Id = 4, Name = "Regression" },
+                new Subject { Id = 5, Name = "Exponential function" },
+                new Subject { Id = 6, Name = "Binomial distribution" }
+            );
         }
     }
 }

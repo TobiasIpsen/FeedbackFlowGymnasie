@@ -9,5 +9,5 @@ public partial class ClassDTO
 
     public DateTimeOffset Year { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

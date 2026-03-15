@@ -20,7 +20,7 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnName("name");
 
             entity.HasData(
-                new Course { Name = "Math" }
+                new Course { Id = 1, Name = "Math" }
             );
         }
     }

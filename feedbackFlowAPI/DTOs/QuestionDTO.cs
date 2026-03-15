@@ -10,13 +10,13 @@ public partial class QuestionDTO
 
     public string Points { get; set; } = null!;
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public ExamType ExamType { get; set; }
 
     public ClassLevel ClassLevel { get; set; }
 
-    public QuestionDifficulty QuestionDifficulity { get; set; }
+    public QuestionDifficulty QuestionDifficulty { get; set; }
 
     public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
 

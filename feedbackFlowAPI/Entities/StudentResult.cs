@@ -13,13 +13,13 @@ public class StudentResult
 
     public string? StudentSelfAssessmentPoints { get; set; }
 
-    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
-    public int? TeacherId { get; set; }
+    public int TeacherId { get; set; }
 
-    public int? StudentId { get; set; }
+    public int StudentId { get; set; }
 
     public int QuestionId { get; set; }
 
@@ -33,5 +33,5 @@ public class StudentResult
 
     public User Student { get; set; } = null!;
 
-    public ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
+    public ICollection<Mistake> Mistakes { get; set; } = new List<Mistake>();
 }

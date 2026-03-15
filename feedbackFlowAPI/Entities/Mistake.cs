@@ -1,11 +1,11 @@
 ﻿namespace feedbackFlowAPI.Entities
 {
-    public class UserRole
+    public class Mistake
     {
         public int Id { get; set; }
 
         public string Name { get; set; } = null!;
 
-        public ICollection<User> Users { get; set; } = new List<User>();
+        public ICollection<StudentResult> StudentResults { get; set; } = new List<StudentResult>();
     }
 }

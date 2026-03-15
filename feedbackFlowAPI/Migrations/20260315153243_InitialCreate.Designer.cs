@@ -12,7 +12,7 @@ using feedbackFlowAPI.Helpers;
 namespace feedbackFlowAPI.Migrations
 {
     [DbContext(typeof(FbfDbContext))]
-    [Migration("20260307164508_InitialCreate")]
+    [Migration("20260315153243_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,9 +23,14 @@ namespace feedbackFlowAPI.Migrations
                 .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "class_level", new[] { "a", "b", "c", "d", "e", "f" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "question_type", new[] { "digital", "analog" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_role", new[] { "student", "teacher", "admin" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "class_level", new[] { "a", "b", "c", "d" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "education", new[] { "hf", "hhx", "htx", "stx" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "exam_type", new[] { "digital", "analog" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "new_old_system", new[] { "new", "old" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "question_context", new[] { "yes_heavy", "yes_light", "no" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "question_difficulty", new[] { "hard", "medium", "easy" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "question_method_requirement", new[] { "apply_formula", "specific_method", "no_requirement" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "standard_question", new[] { "yes", "partially", "no", "with_a_twist" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "visibility", new[] { "private", "public" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
@@ -74,34 +79,19 @@ namespace feedbackFlowAPI.Migrations
                     b.ToTable("ContentTypeQuestionAnswer");
                 });
 
-            modelBuilder.Entity("ErrorTypeStudentResult", b =>
+            modelBuilder.Entity("MistakeStudentResult", b =>
                 {
-                    b.Property<int>("ErrorTypesId")
+                    b.Property<int>("MistakesId")
                         .HasColumnType("integer");
 
                     b.Property<int>("StudentResultsId")
                         .HasColumnType("integer");
 
-                    b.HasKey("ErrorTypesId", "StudentResultsId");
+                    b.HasKey("MistakesId", "StudentResultsId");
 
                     b.HasIndex("StudentResultsId");
 
-                    b.ToTable("ErrorTypeStudentResult");
-                });
-
-            modelBuilder.Entity("QuestionQuestionSet", b =>
-                {
-                    b.Property<int>("QuestionSetsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("QuestionSetsId", "QuestionsId");
-
-                    b.HasIndex("QuestionsId");
-
-                    b.ToTable("QuestionQuestionSet");
+                    b.ToTable("MistakeStudentResult");
                 });
 
             modelBuilder.Entity("QuestionSubject", b =>
@@ -119,6 +109,21 @@ namespace feedbackFlowAPI.Migrations
                     b.ToTable("QuestionSubject");
                 });
 
+            modelBuilder.Entity("UserUserRole", b =>
+                {
+                    b.Property<int>("UserRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserRoleId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserUserRole");
+                });
+
             modelBuilder.Entity("feedbackFlowAPI.Entities.Appendix", b =>
                 {
                     b.Property<int>("Id")
@@ -128,11 +133,9 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -176,18 +179,19 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("course_id");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("Education")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("character varying")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("Year")
+                    b.Property<DateTimeOffset>("Year")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("year");
 
@@ -208,11 +212,9 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Name")
                         .HasColumnType("character varying")
@@ -221,9 +223,36 @@ namespace feedbackFlowAPI.Migrations
                     b.HasKey("Id")
                         .HasName("contenttype_pkey");
 
-                    b.ToTable("content_type", null, t =>
+                    b.ToTable("content_types", null, t =>
                         {
                             t.HasComment("(diagram, tekst)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Text"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Algebraic"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Graph"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Figure"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Table"
                         });
                 });
 
@@ -239,39 +268,89 @@ namespace feedbackFlowAPI.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("character varying")
-                        .HasColumnName("name")
-                        .HasComment("mat, fys, etc.");
+                        .HasColumnName("name");
 
                     b.HasKey("Id")
                         .HasName("courses_pkey");
 
-                    b.ToTable("courses", (string)null);
+                    b.ToTable("courses", null, t =>
+                        {
+                            t.HasComment("mat, fys, etc.");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Math"
+                        });
                 });
 
-            modelBuilder.Entity("feedbackFlowAPI.Entities.ErrorType", b =>
+            modelBuilder.Entity("feedbackFlowAPI.Entities.Mistake", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("error_type");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("character varying")
                         .HasColumnName("name");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
-                        .HasName("errortypes_pkey");
+                        .HasName("mistakes_pkey");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("mistakes", (string)null);
 
-                    b.ToTable("error_types", (string)null);
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Presentation"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Documentation"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Argumentation"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Conclusion"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Calculation"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Insertion"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Inaccurate"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Technical"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Misunderstanding"
+                        });
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.Question", b =>
@@ -291,26 +370,49 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("course_id");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("Education")
+                        .HasColumnType("education")
+                        .HasColumnName("education");
+
+                    b.Property<int>("ExamType")
+                        .HasColumnType("exam_type")
+                        .HasColumnName("exam_type");
+
+                    b.Property<string>("ImgSrc")
+                        .IsRequired()
+                        .HasColumnType("character varying")
+                        .HasColumnName("img_src");
+
+                    b.Property<int>("NewOldSystem")
+                        .HasColumnType("new_old_system")
+                        .HasColumnName("new_old_system");
 
                     b.Property<string>("Points")
                         .IsRequired()
                         .HasColumnType("character varying")
                         .HasColumnName("points");
 
-                    b.Property<int?>("QuestionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("question_id");
+                    b.Property<int>("QuestionContext")
+                        .HasColumnType("question_context")
+                        .HasColumnName("question_context");
 
-                    b.Property<int>("QuestionType")
-                        .HasColumnType("question_type")
-                        .HasColumnName("question_type");
+                    b.Property<int>("QuestionDifficulty")
+                        .HasColumnType("question_difficulty")
+                        .HasColumnName("question_difficulty");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("QuestionMethodRequirement")
+                        .HasColumnType("question_method_requirement")
+                        .HasColumnName("question_method_requirement");
+
+                    b.Property<int>("StandardQuestion")
+                        .HasColumnType("standard_question")
+                        .HasColumnName("standard_question");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
@@ -318,8 +420,6 @@ namespace feedbackFlowAPI.Migrations
                         .HasName("questions_pkey");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("QuestionId");
 
                     b.HasIndex("UserId");
 
@@ -335,11 +435,9 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Name")
                         .HasColumnType("character varying")
@@ -363,7 +461,7 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnName("visibility");
 
                     b.HasKey("Id")
-                        .HasName("questionanswers_pkey");
+                        .HasName("question_answers_pkey");
 
                     b.HasIndex("QuestionId");
 
@@ -394,11 +492,34 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnName("sequence");
 
                     b.HasKey("Id")
-                        .HasName("questioncollections_pkey");
+                        .HasName("question_collections_pkey");
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("questioncollections", (string)null);
+                    b.ToTable("question_collections", (string)null);
+                });
+
+            modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionQuestionSet", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("question_id");
+
+                    b.Property<int>("QuestionSetId")
+                        .HasColumnType("integer")
+                        .HasColumnName("question_set_id");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer")
+                        .HasColumnName("subject_id");
+
+                    b.HasKey("QuestionId", "QuestionSetId", "SubjectId");
+
+                    b.HasIndex("QuestionSetId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("questions_question_sets", (string)null);
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionSet", b =>
@@ -410,11 +531,9 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<bool>("IsDraft")
                         .HasColumnType("boolean")
@@ -429,10 +548,16 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("questionsets_pkey");
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer")
+                        .HasColumnName("teacher_id");
 
-                    b.ToTable("questionsets", (string)null);
+                    b.HasKey("Id")
+                        .HasName("question_sets_pkey");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("question_sets", (string)null);
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.StudentResult", b =>
@@ -444,15 +569,13 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("createddate");
+                        .HasColumnName("created_at");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<int>("QuestionId")
                         .HasColumnType("integer")
@@ -462,6 +585,10 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("question_set_id");
 
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("student_id");
+
                     b.Property<string>("StudentSelfAssessmentPoints")
                         .HasColumnType("character varying")
                         .HasColumnName("student_self_assessment_points");
@@ -470,24 +597,26 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("teacher_feedback");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer")
+                        .HasColumnName("teacher_id");
+
                     b.Property<string>("TeacherPoint")
                         .HasColumnType("character varying")
                         .HasColumnName("teacher_point");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
-                        .HasName("studentresults_pkey");
+                        .HasName("student_results_pkey");
 
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("QuestionSetId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("StudentId");
 
-                    b.ToTable("StudentResults", (string)null);
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("student_results", (string)null);
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.Subject", b =>
@@ -499,16 +628,50 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("character varying")
-                        .HasColumnName("subject")
-                        .HasComment("trigonometri, vectors");
+                        .HasColumnName("subject");
 
                     b.HasKey("Id")
                         .HasName("subjects_pkey");
 
-                    b.ToTable("subjects", (string)null);
+                    b.ToTable("subjects", null, t =>
+                        {
+                            t.HasComment("trigonometri, vectors");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Combinatorics"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Differential Calculus"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Quadratic polynomial"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Regression"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Exponential function"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Binomial distribution"
+                        });
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.User", b =>
@@ -520,6 +683,10 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("character varying")
@@ -528,27 +695,54 @@ namespace feedbackFlowAPI.Migrations
                     b.Property<string>("Firstname")
                         .IsRequired()
                         .HasColumnType("character varying")
-                        .HasColumnName("firstname");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("first_name");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
                         .HasColumnType("character varying")
-                        .HasColumnName("lastname");
-
-                    b.Property<int>("UserRole")
-                        .HasColumnType("user_role")
-                        .HasColumnName("user_role");
+                        .HasColumnName("last_name");
 
                     b.HasKey("Id")
                         .HasName("users_pkey");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("feedbackFlowAPI.Entities.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("character varying")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("userroles_pkey");
+
+                    b.ToTable("user_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Teacher"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Student"
+                        });
                 });
 
             modelBuilder.Entity("ClassUser", b =>
@@ -596,32 +790,17 @@ namespace feedbackFlowAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ErrorTypeStudentResult", b =>
+            modelBuilder.Entity("MistakeStudentResult", b =>
                 {
-                    b.HasOne("feedbackFlowAPI.Entities.ErrorType", null)
+                    b.HasOne("feedbackFlowAPI.Entities.Mistake", null)
                         .WithMany()
-                        .HasForeignKey("ErrorTypesId")
+                        .HasForeignKey("MistakesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("feedbackFlowAPI.Entities.StudentResult", null)
                         .WithMany()
                         .HasForeignKey("StudentResultsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("QuestionQuestionSet", b =>
-                {
-                    b.HasOne("feedbackFlowAPI.Entities.QuestionSet", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionSetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("feedbackFlowAPI.Entities.Question", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -637,6 +816,21 @@ namespace feedbackFlowAPI.Migrations
                     b.HasOne("feedbackFlowAPI.Entities.Subject", null)
                         .WithMany()
                         .HasForeignKey("SubjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UserUserRole", b =>
+                {
+                    b.HasOne("feedbackFlowAPI.Entities.UserRole", null)
+                        .WithMany()
+                        .HasForeignKey("UserRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("feedbackFlowAPI.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -663,16 +857,6 @@ namespace feedbackFlowAPI.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("feedbackFlowAPI.Entities.ErrorType", b =>
-                {
-                    b.HasOne("feedbackFlowAPI.Entities.User", "User")
-                        .WithMany("ErrorTypes")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_users_to_errortypes");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("feedbackFlowAPI.Entities.Question", b =>
                 {
                     b.HasOne("feedbackFlowAPI.Entities.Course", "Course")
@@ -680,19 +864,13 @@ namespace feedbackFlowAPI.Migrations
                         .HasForeignKey("CourseId")
                         .HasConstraintName("fk_courses_to_questions");
 
-                    b.HasOne("feedbackFlowAPI.Entities.Question", "QuestionNavigation")
-                        .WithMany("InverseQuestionNavigation")
-                        .HasForeignKey("QuestionId")
-                        .HasConstraintName("fk_questions_to_questions");
-
                     b.HasOne("feedbackFlowAPI.Entities.User", "User")
                         .WithMany("Questions")
                         .HasForeignKey("UserId")
+                        .IsRequired()
                         .HasConstraintName("fk_users_to_questions");
 
                     b.Navigation("Course");
-
-                    b.Navigation("QuestionNavigation");
 
                     b.Navigation("User");
                 });
@@ -727,6 +905,48 @@ namespace feedbackFlowAPI.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionQuestionSet", b =>
+                {
+                    b.HasOne("feedbackFlowAPI.Entities.Question", "Question")
+                        .WithMany("QuestionSet")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_questions_to_questionquestionset");
+
+                    b.HasOne("feedbackFlowAPI.Entities.QuestionSet", "QuestionSet")
+                        .WithMany("Question")
+                        .HasForeignKey("QuestionSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_questionsets_to_questionquestionset");
+
+                    b.HasOne("feedbackFlowAPI.Entities.Subject", "Subject")
+                        .WithMany("QuestionQuestionSet")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_subject_to_questionquestionset");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("QuestionSet");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionSet", b =>
+                {
+                    b.HasOne("feedbackFlowAPI.Entities.User", "Teacher")
+                        .WithMany("QuestionSets")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_teacher_to_questionset");
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("feedbackFlowAPI.Entities.StudentResult", b =>
                 {
                     b.HasOne("feedbackFlowAPI.Entities.Question", "Question")
@@ -741,16 +961,25 @@ namespace feedbackFlowAPI.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_questionsets_to_studentresults");
 
-                    b.HasOne("feedbackFlowAPI.Entities.User", "User")
+                    b.HasOne("feedbackFlowAPI.Entities.User", "Student")
                         .WithMany("StudentResults")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_users_to_studentresults");
+                        .HasForeignKey("StudentId")
+                        .IsRequired()
+                        .HasConstraintName("fk_student_to_studentresults");
+
+                    b.HasOne("feedbackFlowAPI.Entities.User", "Teacher")
+                        .WithMany("TeacherStudentResults")
+                        .HasForeignKey("TeacherId")
+                        .IsRequired()
+                        .HasConstraintName("fk_teacher_to_studentresults");
 
                     b.Navigation("Question");
 
                     b.Navigation("QuestionSet");
 
-                    b.Navigation("User");
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.Course", b =>
@@ -764,29 +993,38 @@ namespace feedbackFlowAPI.Migrations
                 {
                     b.Navigation("Appendices");
 
-                    b.Navigation("InverseQuestionNavigation");
-
                     b.Navigation("QuestionAnswers");
 
                     b.Navigation("QuestionCollections");
+
+                    b.Navigation("QuestionSet");
 
                     b.Navigation("StudentResults");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionSet", b =>
                 {
+                    b.Navigation("Question");
+
                     b.Navigation("QuestionAnswers");
 
                     b.Navigation("StudentResults");
                 });
 
+            modelBuilder.Entity("feedbackFlowAPI.Entities.Subject", b =>
+                {
+                    b.Navigation("QuestionQuestionSet");
+                });
+
             modelBuilder.Entity("feedbackFlowAPI.Entities.User", b =>
                 {
-                    b.Navigation("ErrorTypes");
+                    b.Navigation("QuestionSets");
 
                     b.Navigation("Questions");
 
                     b.Navigation("StudentResults");
+
+                    b.Navigation("TeacherStudentResults");
                 });
 #pragma warning restore 612, 618
         }

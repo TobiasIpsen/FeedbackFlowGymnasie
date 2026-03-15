@@ -13,7 +13,7 @@ public class ContentType
 
     public string? Name { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public ICollection<Question> Questions { get; set; } = new List<Question>();
 

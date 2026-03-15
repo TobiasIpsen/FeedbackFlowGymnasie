@@ -12,5 +12,5 @@ public partial class ContentTypeDTO
 
     public string? Name { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

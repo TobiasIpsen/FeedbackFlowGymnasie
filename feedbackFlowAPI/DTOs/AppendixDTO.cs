@@ -12,5 +12,5 @@ public partial class AppendixDTO
 
     public string Url { get; set; } = null!;
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

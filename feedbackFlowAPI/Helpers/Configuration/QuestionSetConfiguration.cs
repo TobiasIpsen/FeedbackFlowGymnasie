@@ -15,8 +15,8 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
-            entity.Property(e => e.IsDeleted)
-                .HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnName("deleted_at");
             entity.Property(e => e.IsDraft)
                 .HasComment("if its assigned to students")
                 .HasColumnName("is_draft");
@@ -25,6 +25,8 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
+            entity.Property(e => e.TeacherId)
+                .HasColumnName("teacher_id");
 
             entity.HasOne(q => q.Teacher)
                 .WithMany(u => u.QuestionSets)

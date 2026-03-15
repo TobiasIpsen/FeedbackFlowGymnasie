@@ -16,7 +16,7 @@ public class QuestionSet
     /// </summary>
     public bool IsDraft { get; set; }
 
-    public DateTimeOffset IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public int TeacherId { get; set; }
 
