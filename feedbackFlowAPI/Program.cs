@@ -31,10 +31,15 @@ namespace feedbackFlowAPI
                     connectionString,
                     npgsqlOptionsAction: o =>
                     {
-                        o.MapEnum<UserRole>("user_role");
                         o.MapEnum<ClassLevel>("class_level");
-                        o.MapEnum<QuestionType>("question_type");
+                        o.MapEnum<ExamType>("exam_type");
                         o.MapEnum<Visibility>("visibility");
+                        o.MapEnum<QuestionDifficulty>("question_difficulty");
+                        o.MapEnum<QuestionMethodRequirement>("question_method_requirement");
+                        o.MapEnum<Education>("eudcation");
+                        o.MapEnum<QuestionContext>("question_context");
+                        o.MapEnum<StandardQuestion>("standard_question");
+                        o.MapEnum<NewOldSystem>("new_old_system");
                     });
             });
 
