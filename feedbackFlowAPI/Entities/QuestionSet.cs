@@ -17,6 +17,9 @@ public class QuestionSet
     public bool IsDraft { get; set; }
 
     public bool IsDeleted { get; set; }
+    public int TeacherId { get; set; }
+
+    public virtual User Teacher { get; set; } = null!;
 
     public virtual ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 
