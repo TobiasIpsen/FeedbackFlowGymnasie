@@ -25,7 +25,8 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnType("character varying")
                 .HasColumnName("student_self_assessment_points");
             entity.Property(e => e.CreatedAt)
-                .HasColumnName("created_at");
+                .HasColumnName("created_at")
+                .HasDefaultValueSql("NOW()");
             entity.Property(e => e.DeletedAt)
                 .HasColumnName("deleted_at");
             entity.Property(e => e.TeacherId)

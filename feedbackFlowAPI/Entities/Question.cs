@@ -43,6 +43,7 @@ public class Question
 
     public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
+    //Teacher?
     public int UserId { get; set; }
 
     public User User { get; set; } = null!;
