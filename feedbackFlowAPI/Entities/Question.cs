@@ -47,7 +47,7 @@ public class Question
 
     public User User { get; set; } = null!;
 
-    public ICollection<QuestionQuestionSet> QuestionSet { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet> QuestionSets { get; set; } = new List<QuestionQuestionSet>();
 
     public ICollection<Subject>? Subjects { get; set; } = new List<Subject>();
 

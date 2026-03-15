@@ -20,7 +20,7 @@ public partial class QuestionDTO
 
     public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
 
-    public Education Eudcation { get; set; }
+    public Education Education { get; set; }
 
     public StandardQuestion StandardQuestion { get; set; }
 }

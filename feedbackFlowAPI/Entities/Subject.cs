@@ -15,5 +15,5 @@ public class Subject
 
     public ICollection<Question>? Questions { get; set; } = new List<Question>();
 
-    public ICollection<QuestionQuestionSet>? QuestionQuestionSet { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet>? QuestionQuestionSets { get; set; } = new List<QuestionQuestionSet>();
 }

@@ -24,6 +24,9 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnName("name");
             entity.Property(e => e.Year)
                 .HasColumnName("year");
+            entity.Property(e => e.Education)
+                .HasColumnType("education")
+                .HasColumnName("education");
             entity.Property(e => e.ClassLevel)
                 .HasColumnType("class_level")
                 .HasColumnName("class_level");

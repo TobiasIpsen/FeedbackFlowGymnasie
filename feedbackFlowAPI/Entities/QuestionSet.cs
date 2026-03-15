@@ -26,5 +26,5 @@ public class QuestionSet
 
     public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
-    public ICollection<QuestionQuestionSet> Question { get; set; } = new List<QuestionQuestionSet>();
+    public ICollection<QuestionQuestionSet> Questions { get; set; } = new List<QuestionQuestionSet>();
 }

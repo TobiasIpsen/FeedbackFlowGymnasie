@@ -20,15 +20,15 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnName("question_set_id");
 
             entity.HasOne(d => d.Question)
-                .WithMany(p => p.QuestionSet)
+                .WithMany(p => p.QuestionSets)
                 .HasForeignKey(d => d.QuestionId)
                 .HasConstraintName("fk_questions_to_questionquestionset");
             entity.HasOne(d => d.QuestionSet)
-                .WithMany(p => p.Question)
+                .WithMany(p => p.Questions)
                 .HasForeignKey(d => d.QuestionSetId)
                 .HasConstraintName("fk_questionsets_to_questionquestionset");
             entity.HasOne(d => d.Subject)
-                .WithMany(p => p.QuestionQuestionSet)
+                .WithMany(p => p.QuestionQuestionSets)
                 .HasForeignKey(d => d.SubjectId)
                 .HasConstraintName("fk_subject_to_questionquestionset");
         }

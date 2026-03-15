@@ -24,8 +24,8 @@ namespace feedbackFlowAPI.Helpers.Configuration
             entity.Property(e => e.Email)
                 .HasColumnType("character varying")
                 .HasColumnName("email");
-            entity.Property(e => e.DeletedAt).
-                HasColumnName("deleted_at");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnName("deleted_at");
         }
     }
 }

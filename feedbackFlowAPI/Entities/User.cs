@@ -16,7 +16,7 @@ public class User
 
     public DateTimeOffset? DeletedAt { get; set; }
 
-    public ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     public ICollection<Question>? Questions { get; set; } = new List<Question>();
 
