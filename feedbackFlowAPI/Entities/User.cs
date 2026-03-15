@@ -1,5 +1,4 @@
-﻿using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.Helpers;
+﻿using feedbackFlowAPI.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +14,7 @@ public class User
 
     public string Email { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 
     public virtual ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
 

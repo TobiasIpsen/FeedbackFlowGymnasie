@@ -6,11 +6,11 @@ namespace feedbackFlowAPI.DTOs;
 /// <summary>
 /// (diagram, tekst)
 /// </summary>
-public partial class ContenttypeDTO
+public partial class ContentTypeDTO
 {
     public int Id { get; set; }
 
     public string? Name { get; set; }
 
-    public bool Isdeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 }

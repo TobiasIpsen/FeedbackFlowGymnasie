@@ -8,9 +8,10 @@ public class Subject
     public int Id { get; set; }
 
     /// <summary>
+    /// Emne.
     /// trigonometri, vectors
     /// </summary>
-    public string name { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     public virtual ICollection<Question>? Questions { get; set; } = new List<Question>();
 

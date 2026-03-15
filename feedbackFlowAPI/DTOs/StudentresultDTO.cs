@@ -3,17 +3,15 @@ using System.Collections.Generic;
 
 namespace feedbackFlowAPI.DTOs;
 
-public partial class StudentresultDTO
+public partial class StudentResultDTO
 {
-    public int Id { get; set; }
+    public string? TeacherPoint { get; set; }
 
-    public string? Teacherpoint { get; set; }
+    public string? TeacherFeedback { get; set; }
 
-    public string? Teacherfeedback { get; set; }
+    public string? StudentSelfAssessmentPoints { get; set; }
 
-    public string? Studentselfassessmentpoints { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
 
-    public DateTime Createddate { get; set; }
-
-    public bool Isdeleted { get; set; }
+    public DateTimeOffset Isdeleted { get; set; }
 }

@@ -10,11 +10,13 @@ public class Class
 
     public string Name { get; set; } = null!;
 
-    public DateTime Year { get; set; }
+    public DateTimeOffset Year { get; set; }
+
+    public Education Education { get; set; }
 
     public ClassLevel ClassLevel { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 
     public int CourseId { get; set; }
 

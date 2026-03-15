@@ -16,7 +16,8 @@ public class QuestionSet
     /// </summary>
     public bool IsDraft { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
+
     public int TeacherId { get; set; }
 
     public virtual User Teacher { get; set; } = null!;

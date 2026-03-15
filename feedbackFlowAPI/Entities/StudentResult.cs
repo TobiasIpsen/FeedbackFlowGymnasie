@@ -13,9 +13,9 @@ public class StudentResult
 
     public string? StudentSelfAssessmentPoints { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 
     public int? TeacherId { get; set; }
 

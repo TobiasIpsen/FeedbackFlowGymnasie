@@ -14,7 +14,7 @@ public class Appendix
 
     public string Url { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 
     public int QuestionId { get; set; }
 

@@ -5,11 +5,9 @@ namespace feedbackFlowAPI.DTOs;
 
 public partial class ClassDTO
 {
-    public int Id { get; set; }
-
     public string Name { get; set; } = null!;
 
-    public DateTime Year { get; set; }
+    public DateTimeOffset Year { get; set; }
 
-    public bool Isdeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 }

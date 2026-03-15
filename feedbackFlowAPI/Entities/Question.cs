@@ -12,7 +12,7 @@ public class Question
 
     public string Points { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset IsDeleted { get; set; }
 
     public ExamType ExamType { get; set; }
 
