@@ -17,7 +17,7 @@ public class User
 
     public bool IsDeleted { get; set; }
 
-    public UserRole UserRole { get; set; } = UserRole.Student;
+    public virtual ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
 
     public virtual ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
 
