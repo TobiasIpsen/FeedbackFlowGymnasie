@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace feedbackFlowAPI.Migrations
 {
     /// <inheritdoc />
@@ -13,19 +15,24 @@ namespace feedbackFlowAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:class_level", "a,b,c,d,e,f")
-                .Annotation("Npgsql:Enum:question_type", "digital,analog")
-                .Annotation("Npgsql:Enum:user_role", "student,teacher,admin")
+                .Annotation("Npgsql:Enum:class_level", "a,b,c,d")
+                .Annotation("Npgsql:Enum:education", "hf,hhx,htx,stx")
+                .Annotation("Npgsql:Enum:exam_type", "digital,analog")
+                .Annotation("Npgsql:Enum:new_old_system", "new,old")
+                .Annotation("Npgsql:Enum:question_context", "yes_heavy,yes_light,no")
+                .Annotation("Npgsql:Enum:question_difficulty", "hard,medium,easy")
+                .Annotation("Npgsql:Enum:question_method_requirement", "apply_formula,specific_method,no_requirement")
+                .Annotation("Npgsql:Enum:standard_question", "yes,partially,no,with_a_twist")
                 .Annotation("Npgsql:Enum:visibility", "private,public");
 
             migrationBuilder.CreateTable(
-                name: "content_type",
+                name: "content_types",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,27 +46,25 @@ namespace feedbackFlowAPI.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    name = table.Column<string>(type: "character varying", nullable: false, comment: "mat, fys, etc.")
+                    name = table.Column<string>(type: "character varying", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("courses_pkey", x => x.id);
-                });
+                },
+                comment: "mat, fys, etc.");
 
             migrationBuilder.CreateTable(
-                name: "questionsets",
+                name: "mistakes",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    name = table.Column<string>(type: "character varying", nullable: true),
-                    is_exam = table.Column<bool>(type: "boolean", nullable: false),
-                    is_draft = table.Column<bool>(type: "boolean", nullable: false, comment: "if its assigned to students"),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("questionsets_pkey", x => x.id);
+                    table.PrimaryKey("mistakes_pkey", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,11 +73,25 @@ namespace feedbackFlowAPI.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    subject = table.Column<string>(type: "character varying", nullable: false, comment: "trigonometri, vectors")
+                    subject = table.Column<string>(type: "character varying", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("subjects_pkey", x => x.id);
+                },
+                comment: "trigonometri, vectors");
+
+            migrationBuilder.CreateTable(
+                name: "user_roles",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("userroles_pkey", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -81,11 +100,10 @@ namespace feedbackFlowAPI.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    firstname = table.Column<string>(type: "character varying", nullable: false),
-                    lastname = table.Column<string>(type: "character varying", nullable: false),
+                    first_name = table.Column<string>(type: "character varying", nullable: false),
+                    last_name = table.Column<string>(type: "character varying", nullable: false),
                     email = table.Column<string>(type: "character varying", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    user_role = table.Column<int>(type: "user_role", nullable: false)
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -99,9 +117,10 @@ namespace feedbackFlowAPI.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying", nullable: false),
-                    year = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    year = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Education = table.Column<int>(type: "integer", nullable: false),
                     class_level = table.Column<int>(type: "class_level", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     course_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -115,22 +134,26 @@ namespace feedbackFlowAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "error_types",
+                name: "question_sets",
                 columns: table => new
                 {
-                    error_type = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    name = table.Column<string>(type: "character varying", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: true)
+                    name = table.Column<string>(type: "character varying", nullable: true),
+                    is_exam = table.Column<bool>(type: "boolean", nullable: false),
+                    is_draft = table.Column<bool>(type: "boolean", nullable: false, comment: "if its assigned to students"),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    teacher_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("errortypes_pkey", x => x.error_type);
+                    table.PrimaryKey("question_sets_pkey", x => x.id);
                     table.ForeignKey(
-                        name: "fk_users_to_errortypes",
-                        column: x => x.user_id,
+                        name: "fk_teacher_to_questionset",
+                        column: x => x.teacher_id,
                         principalTable: "users",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,13 +162,19 @@ namespace feedbackFlowAPI.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    img_src = table.Column<string>(type: "character varying", nullable: false),
                     points = table.Column<string>(type: "character varying", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    question_type = table.Column<int>(type: "question_type", nullable: false),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    exam_type = table.Column<int>(type: "exam_type", nullable: false),
                     class_level = table.Column<int>(type: "class_level", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: true),
+                    question_difficulty = table.Column<int>(type: "question_difficulty", nullable: false),
+                    question_method_requirement = table.Column<int>(type: "question_method_requirement", nullable: false),
+                    education = table.Column<int>(type: "education", nullable: false),
+                    question_context = table.Column<int>(type: "question_context", nullable: false),
+                    standard_question = table.Column<int>(type: "standard_question", nullable: false),
+                    new_old_system = table.Column<int>(type: "new_old_system", nullable: false),
                     course_id = table.Column<int>(type: "integer", nullable: true),
-                    question_id = table.Column<int>(type: "integer", nullable: true)
+                    user_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,15 +185,34 @@ namespace feedbackFlowAPI.Migrations
                         principalTable: "courses",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_questions_to_questions",
-                        column: x => x.question_id,
-                        principalTable: "questions",
-                        principalColumn: "id");
-                    table.ForeignKey(
                         name: "fk_users_to_questions",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserUserRole",
+                columns: table => new
+                {
+                    UserRoleId = table.Column<int>(type: "integer", nullable: false),
+                    UsersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserUserRole", x => new { x.UserRoleId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_UserUserRole_user_roles_UserRoleId",
+                        column: x => x.UserRoleId,
+                        principalTable: "user_roles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserUserRole_users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,7 +247,7 @@ namespace feedbackFlowAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying", nullable: false),
                     url = table.Column<string>(type: "character varying", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     question_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -224,9 +272,9 @@ namespace feedbackFlowAPI.Migrations
                 {
                     table.PrimaryKey("PK_ContentTypeQuestion", x => new { x.ContentTypesId, x.QuestionsId });
                     table.ForeignKey(
-                        name: "FK_ContentTypeQuestion_content_type_ContentTypesId",
+                        name: "FK_ContentTypeQuestion_content_types_ContentTypesId",
                         column: x => x.ContentTypesId,
-                        principalTable: "content_type",
+                        principalTable: "content_types",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -246,13 +294,13 @@ namespace feedbackFlowAPI.Migrations
                     name = table.Column<string>(type: "character varying", nullable: true),
                     url = table.Column<string>(type: "character varying", nullable: true),
                     visibility = table.Column<int>(type: "visibility", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     question_id = table.Column<int>(type: "integer", nullable: false),
                     question_set_id = table.Column<int>(type: "integer", nullable: false, comment: "f.feks. svar til hele questionset i stedet for kun 1 question")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("questionanswers_pkey", x => x.id);
+                    table.PrimaryKey("question_answers_pkey", x => x.id);
                     table.ForeignKey(
                         name: "fk_questions_to_questionanswers",
                         column: x => x.question_id,
@@ -261,12 +309,12 @@ namespace feedbackFlowAPI.Migrations
                     table.ForeignKey(
                         name: "fk_questionsets_to_questionanswers",
                         column: x => x.question_set_id,
-                        principalTable: "questionsets",
+                        principalTable: "question_sets",
                         principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "questioncollections",
+                name: "question_collections",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -277,7 +325,7 @@ namespace feedbackFlowAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("questioncollections_pkey", x => x.id);
+                    table.PrimaryKey("question_collections_pkey", x => x.id);
                     table.ForeignKey(
                         name: "fk_questions_to_questioncollections",
                         column: x => x.question_id,
@@ -286,25 +334,32 @@ namespace feedbackFlowAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuestionQuestionSet",
+                name: "questions_question_sets",
                 columns: table => new
                 {
-                    QuestionSetsId = table.Column<int>(type: "integer", nullable: false),
-                    QuestionsId = table.Column<int>(type: "integer", nullable: false)
+                    subject_id = table.Column<int>(type: "integer", nullable: false),
+                    question_id = table.Column<int>(type: "integer", nullable: false),
+                    question_set_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestionQuestionSet", x => new { x.QuestionSetsId, x.QuestionsId });
+                    table.PrimaryKey("PK_questions_question_sets", x => new { x.question_id, x.question_set_id, x.subject_id });
                     table.ForeignKey(
-                        name: "FK_QuestionQuestionSet_questions_QuestionsId",
-                        column: x => x.QuestionsId,
+                        name: "fk_questions_to_questionquestionset",
+                        column: x => x.question_id,
                         principalTable: "questions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_QuestionQuestionSet_questionsets_QuestionSetsId",
-                        column: x => x.QuestionSetsId,
-                        principalTable: "questionsets",
+                        name: "fk_questionsets_to_questionquestionset",
+                        column: x => x.question_set_id,
+                        principalTable: "question_sets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_subject_to_questionquestionset",
+                        column: x => x.subject_id,
+                        principalTable: "subjects",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -334,7 +389,7 @@ namespace feedbackFlowAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentResults",
+                name: "student_results",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -342,15 +397,16 @@ namespace feedbackFlowAPI.Migrations
                     teacher_point = table.Column<string>(type: "character varying", nullable: true),
                     teacher_feedback = table.Column<string>(type: "character varying", nullable: true),
                     student_self_assessment_points = table.Column<string>(type: "character varying", nullable: true),
-                    createddate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    user_id = table.Column<int>(type: "integer", nullable: true),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    teacher_id = table.Column<int>(type: "integer", nullable: false),
+                    student_id = table.Column<int>(type: "integer", nullable: false),
                     question_id = table.Column<int>(type: "integer", nullable: false),
                     question_set_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("studentresults_pkey", x => x.id);
+                    table.PrimaryKey("student_results_pkey", x => x.id);
                     table.ForeignKey(
                         name: "fk_questions_to_studentresults",
                         column: x => x.question_id,
@@ -359,11 +415,16 @@ namespace feedbackFlowAPI.Migrations
                     table.ForeignKey(
                         name: "fk_questionsets_to_studentresults",
                         column: x => x.question_set_id,
-                        principalTable: "questionsets",
+                        principalTable: "question_sets",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "fk_users_to_studentresults",
-                        column: x => x.user_id,
+                        name: "fk_student_to_studentresults",
+                        column: x => x.student_id,
+                        principalTable: "users",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "fk_teacher_to_studentresults",
+                        column: x => x.teacher_id,
                         principalTable: "users",
                         principalColumn: "id");
                 });
@@ -379,9 +440,9 @@ namespace feedbackFlowAPI.Migrations
                 {
                     table.PrimaryKey("PK_ContentTypeQuestionAnswer", x => new { x.ContentTypesId, x.QuestionAnswersId });
                     table.ForeignKey(
-                        name: "FK_ContentTypeQuestionAnswer_content_type_ContentTypesId",
+                        name: "FK_ContentTypeQuestionAnswer_content_types_ContentTypesId",
                         column: x => x.ContentTypesId,
-                        principalTable: "content_type",
+                        principalTable: "content_types",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -393,27 +454,83 @@ namespace feedbackFlowAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ErrorTypeStudentResult",
+                name: "MistakeStudentResult",
                 columns: table => new
                 {
-                    ErrorTypesId = table.Column<int>(type: "integer", nullable: false),
+                    MistakesId = table.Column<int>(type: "integer", nullable: false),
                     StudentResultsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ErrorTypeStudentResult", x => new { x.ErrorTypesId, x.StudentResultsId });
+                    table.PrimaryKey("PK_MistakeStudentResult", x => new { x.MistakesId, x.StudentResultsId });
                     table.ForeignKey(
-                        name: "FK_ErrorTypeStudentResult_StudentResults_StudentResultsId",
-                        column: x => x.StudentResultsId,
-                        principalTable: "StudentResults",
+                        name: "FK_MistakeStudentResult_mistakes_MistakesId",
+                        column: x => x.MistakesId,
+                        principalTable: "mistakes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ErrorTypeStudentResult_error_types_ErrorTypesId",
-                        column: x => x.ErrorTypesId,
-                        principalTable: "error_types",
-                        principalColumn: "error_type",
+                        name: "FK_MistakeStudentResult_student_results_StudentResultsId",
+                        column: x => x.StudentResultsId,
+                        principalTable: "student_results",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "content_types",
+                columns: new[] { "id", "deleted_at", "name" },
+                values: new object[,]
+                {
+                    { 1, null, "Text" },
+                    { 2, null, "Algebraic" },
+                    { 3, null, "Graph" },
+                    { 4, null, "Figure" },
+                    { 5, null, "Table" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "courses",
+                columns: new[] { "id", "name" },
+                values: new object[] { 1, "Math" });
+
+            migrationBuilder.InsertData(
+                table: "mistakes",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "Presentation" },
+                    { 2, "Documentation" },
+                    { 3, "Argumentation" },
+                    { 4, "Conclusion" },
+                    { 5, "Calculation" },
+                    { 6, "Insertion" },
+                    { 7, "Inaccurate" },
+                    { 8, "Technical" },
+                    { 9, "Misunderstanding" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "subjects",
+                columns: new[] { "id", "subject" },
+                values: new object[,]
+                {
+                    { 1, "Combinatorics" },
+                    { 2, "Differential Calculus" },
+                    { 3, "Quadratic polynomial" },
+                    { 4, "Regression" },
+                    { 5, "Exponential function" },
+                    { 6, "Binomial distribution" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "user_roles",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "Teacher" },
+                    { 3, "Student" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -442,13 +559,8 @@ namespace feedbackFlowAPI.Migrations
                 column: "QuestionAnswersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_error_types_user_id",
-                table: "error_types",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ErrorTypeStudentResult_StudentResultsId",
-                table: "ErrorTypeStudentResult",
+                name: "IX_MistakeStudentResult_StudentResultsId",
+                table: "MistakeStudentResult",
                 column: "StudentResultsId");
 
             migrationBuilder.CreateIndex(
@@ -462,14 +574,14 @@ namespace feedbackFlowAPI.Migrations
                 column: "question_set_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_questioncollections_question_id",
-                table: "questioncollections",
+                name: "IX_question_collections_question_id",
+                table: "question_collections",
                 column: "question_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestionQuestionSet_QuestionsId",
-                table: "QuestionQuestionSet",
-                column: "QuestionsId");
+                name: "IX_question_sets_teacher_id",
+                table: "question_sets",
+                column: "teacher_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_questions_course_id",
@@ -477,14 +589,19 @@ namespace feedbackFlowAPI.Migrations
                 column: "course_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_questions_question_id",
-                table: "questions",
-                column: "question_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_questions_user_id",
                 table: "questions",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_questions_question_sets_question_set_id",
+                table: "questions_question_sets",
+                column: "question_set_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_questions_question_sets_subject_id",
+                table: "questions_question_sets",
+                column: "subject_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestionSubject_SubjectsId",
@@ -492,19 +609,29 @@ namespace feedbackFlowAPI.Migrations
                 column: "SubjectsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentResults_question_id",
-                table: "StudentResults",
+                name: "IX_student_results_question_id",
+                table: "student_results",
                 column: "question_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentResults_question_set_id",
-                table: "StudentResults",
+                name: "IX_student_results_question_set_id",
+                table: "student_results",
                 column: "question_set_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentResults_user_id",
-                table: "StudentResults",
-                column: "user_id");
+                name: "IX_student_results_student_id",
+                table: "student_results",
+                column: "student_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_student_results_teacher_id",
+                table: "student_results",
+                column: "teacher_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserUserRole_UsersId",
+                table: "UserUserRole",
+                column: "UsersId");
         }
 
         /// <inheritdoc />
@@ -523,40 +650,46 @@ namespace feedbackFlowAPI.Migrations
                 name: "ContentTypeQuestionAnswer");
 
             migrationBuilder.DropTable(
-                name: "ErrorTypeStudentResult");
+                name: "MistakeStudentResult");
 
             migrationBuilder.DropTable(
-                name: "questioncollections");
+                name: "question_collections");
 
             migrationBuilder.DropTable(
-                name: "QuestionQuestionSet");
+                name: "questions_question_sets");
 
             migrationBuilder.DropTable(
                 name: "QuestionSubject");
 
             migrationBuilder.DropTable(
+                name: "UserUserRole");
+
+            migrationBuilder.DropTable(
                 name: "classes");
 
             migrationBuilder.DropTable(
-                name: "content_type");
+                name: "content_types");
 
             migrationBuilder.DropTable(
                 name: "question_answers");
 
             migrationBuilder.DropTable(
-                name: "StudentResults");
+                name: "mistakes");
 
             migrationBuilder.DropTable(
-                name: "error_types");
+                name: "student_results");
 
             migrationBuilder.DropTable(
                 name: "subjects");
 
             migrationBuilder.DropTable(
+                name: "user_roles");
+
+            migrationBuilder.DropTable(
                 name: "questions");
 
             migrationBuilder.DropTable(
-                name: "questionsets");
+                name: "question_sets");
 
             migrationBuilder.DropTable(
                 name: "courses");

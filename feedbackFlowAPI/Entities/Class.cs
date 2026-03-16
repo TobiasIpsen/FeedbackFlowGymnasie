@@ -10,15 +10,17 @@ public class Class
 
     public string Name { get; set; } = null!;
 
-    public DateTime Year { get; set; }
+    public DateTimeOffset Year { get; set; }
+
+    public Education Education { get; set; }
 
     public ClassLevel ClassLevel { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public int CourseId { get; set; }
 
-    public virtual Course Course { get; set; } = null!;
+    public Course Course { get; set; } = null!;
 
-    public virtual ICollection<User>? Users { get; set; } = new List<User>();
+    public ICollection<User>? Users { get; set; } = new List<User>();
 }

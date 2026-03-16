@@ -16,11 +16,15 @@ public class QuestionSet
     /// </summary>
     public bool IsDraft { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
-    public virtual ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+    public int TeacherId { get; set; }
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public User Teacher { get; set; } = null!;
 
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public ICollection<QuestionAnswer>? QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+
+    public ICollection<QuestionQuestionSet> Questions { get; set; } = new List<QuestionQuestionSet>();
 }

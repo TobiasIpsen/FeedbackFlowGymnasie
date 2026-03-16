@@ -6,13 +6,11 @@ namespace feedbackFlowAPI.DTOs;
 /// <summary>
 /// (Billag)
 /// </summary>
-public partial class Appendix
+public partial class AppendixDTO
 {
-    public int Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string Url { get; set; } = null!;
 
-    public bool Isdeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

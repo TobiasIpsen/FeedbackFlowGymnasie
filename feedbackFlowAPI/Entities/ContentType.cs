@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace feedbackFlowAPI.Entities;
 
 /// <summary>
-/// (diagram, tekst)
+/// Opgave/Spørgsmål input.
+/// Tekst, Algebraik(e) udtryk, Graf(er), Figur(er), Tabel(er)
 /// </summary>
 public class ContentType
 {
@@ -12,9 +13,9 @@ public class ContentType
 
     public string? Name { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<QuestionAnswer> QuestionAnswers { get; set; } = new List<QuestionAnswer>();
+    public ICollection<QuestionAnswer> QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 }

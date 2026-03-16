@@ -14,9 +14,9 @@ public class Appendix
 
     public string Url { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public int QuestionId { get; set; }
 
-    public virtual Question Question { get; set; } = null!;
+    public Question Question { get; set; } = null!;
 }

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace feedbackFlowAPI.Entities;
 
+/// <summary>
+/// Mat, Fys, etc.
+/// </summary>
 public class Course
 {
     public int Id { get; set; }
 
-    /// <summary>
-    /// mat, fys, etc.
-    /// </summary>
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+    public ICollection<Class> Classes { get; set; } = new List<Class>();
 
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
 }

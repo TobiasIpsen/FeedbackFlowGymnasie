@@ -1,5 +1,4 @@
-﻿using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.Helpers;
+﻿using feedbackFlowAPI.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -15,15 +14,17 @@ public class User
 
     public string Email { get; set; } = null!;
 
-    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
-    public UserRole UserRole { get; set; } = UserRole.Student;
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
-    public virtual ICollection<ErrorType>? ErrorTypes { get; set; } = new List<ErrorType>();
+    public ICollection<Question>? Questions { get; set; } = new List<Question>();
 
-    public virtual ICollection<Question>? Questions { get; set; } = new List<Question>();
+    public ICollection<QuestionSet>? QuestionSets { get; set; } = new List<QuestionSet>();
 
-    public virtual ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
+    public ICollection<StudentResult>? StudentResults { get; set; } = new List<StudentResult>();
 
-    public virtual ICollection<Class>? Classes { get; set; } = new List<Class>();
+    public ICollection<StudentResult>? TeacherStudentResults { get; set; } = new List<StudentResult>();
+
+    public ICollection<Class>? Classes { get; set; } = new List<Class>();
 }
