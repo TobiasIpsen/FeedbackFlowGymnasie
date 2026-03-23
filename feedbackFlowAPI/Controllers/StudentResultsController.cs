@@ -43,6 +43,22 @@ namespace feedbackFlowAPI.Controllers
             return studentresult;
         }
 
+        // GET: api/Studentresults/5/mistakes
+        [HttpGet("{id}/mistakes")]
+        public async Task<ActionResult<IEnumerable<Mistake>>> GetStudentresultMistakes(int id)
+        {
+            var studentresult = await _context.StudentResults
+                .Include(sr => sr.Mistakes)
+                .FirstOrDefaultAsync(sr => sr.Id == id);
+
+            if (studentresult == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(studentresult.Mistakes);
+        }
+
         // PUT: api/Studentresults/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -86,6 +102,34 @@ namespace feedbackFlowAPI.Controllers
             }
 
             studentresult.TeacherFeedback = feedback.TeacherFeedback;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // PUT: api/Studentresults/5/mistakes
+        [HttpPut("{id}/mistakes")]
+        public async Task<IActionResult> PutStudentresultMistakes(int id, StudentResultMistakesDTO mistakesDto)
+        {
+            var studentresult = await _context.StudentResults
+                .Include(sr => sr.Mistakes)
+                .FirstOrDefaultAsync(sr => sr.Id == id);
+
+            if (studentresult == null)
+            {
+                return NotFound();
+            }
+
+            var mistakes = await _context.Mistakes
+                .Where(m => mistakesDto.MistakeIds.Contains(m.Id))
+                .ToListAsync();
+
+            studentresult.Mistakes.Clear();
+            foreach (var mistake in mistakes)
+            {
+                studentresult.Mistakes.Add(mistake);
+            }
 
             await _context.SaveChangesAsync();
 
