@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.DTOs;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -69,6 +70,24 @@ namespace feedbackFlowAPI.Controllers
                     throw;
                 }
             }
+
+            return NoContent();
+        }
+
+        // PUT: api/Studentresults/5/teacher-feedback
+        [HttpPut("{id}/teacher-feedback")]
+        public async Task<IActionResult> PutStudentresultTeacherFeedback(int id, StudentResultFeedbackDTO feedback)
+        {
+            var studentresult = await _context.StudentResults.FindAsync(id);
+
+            if (studentresult == null)
+            {
+                return NotFound();
+            }
+
+            studentresult.TeacherFeedback = feedback.TeacherFeedback;
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
