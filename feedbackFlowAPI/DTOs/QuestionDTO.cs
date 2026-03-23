@@ -1,26 +1,46 @@
-﻿using feedbackFlowAPI.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using feedbackFlowAPI.Helpers;
 
-namespace feedbackFlowAPI.DTOs;
-
-public partial class QuestionDTO
+namespace feedbackFlowAPI.DTOs
 {
-    public string ImgSrc { get; set; } = null!;
+    public class QuestionDto
+    {
+        [Required]
+        public string ImgSrc { get; set; } = null!;
 
-    public string Points { get; set; } = null!;
+        [Required]
+        public string Points { get; set; } = null!;
 
-    public DateTimeOffset? DeletedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
-    public ExamType ExamType { get; set; }
+        [Required]
+        public ExamType ExamType { get; set; }
 
-    public ClassLevel ClassLevel { get; set; }
+        [Required]
+        public ClassLevel ClassLevel { get; set; }
 
-    public QuestionDifficulty QuestionDifficulty { get; set; }
+        [Required]
+        public QuestionDifficulty QuestionDifficulty { get; set; }
 
-    public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
+        [Required]
+        public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
 
-    public Education Education { get; set; }
+        [Required]
+        public Education Education { get; set; }
 
-    public StandardQuestion StandardQuestion { get; set; }
+        [Required]
+        public QuestionContext QuestionContext { get; set; }
+
+        [Required]
+        public StandardQuestion StandardQuestion { get; set; }
+
+        [Required]
+        public NewOldSystem NewOldSystem { get; set; }
+
+        public int? CourseId { get; set; }
+
+        [Required]
+        public int UserId { get; set; }
+    }
 }

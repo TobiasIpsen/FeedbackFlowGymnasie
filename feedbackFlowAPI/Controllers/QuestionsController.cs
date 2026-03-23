@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.DTOs;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -76,24 +77,27 @@ namespace feedbackFlowAPI.Controllers
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(Question question)
+        public async Task<ActionResult<Question>> PostQuestion(QuestionDto questionDto)
         {
+            var question = new Question
+            {
+                ImgSrc = questionDto.ImgSrc,
+                Points = questionDto.Points,
+                DeletedAt = questionDto.DeletedAt,
+                ExamType = questionDto.ExamType,
+                ClassLevel = questionDto.ClassLevel,
+                QuestionDifficulty = questionDto.QuestionDifficulty,
+                QuestionMethodRequirement = questionDto.QuestionMethodRequirement,
+                Education = questionDto.Education,
+                QuestionContext = questionDto.QuestionContext,
+                StandardQuestion = questionDto.StandardQuestion,
+                NewOldSystem = questionDto.NewOldSystem,
+                CourseId = questionDto.CourseId,
+                UserId = questionDto.UserId
+            };
+
             _context.Questions.Add(question);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (QuestionExists(question.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
         }
