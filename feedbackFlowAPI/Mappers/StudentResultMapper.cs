@@ -3,7 +3,7 @@ using feedbackFlowAPI.Entities;
 
 namespace feedbackFlowAPI.Mappers
 {
-    public class StudentResultMapper
+    public static class StudentResultMapper
     {
         public static StudentResult ToEntity(
             TeacherFeedbackDTO dto,
