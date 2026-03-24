@@ -1,4 +1,5 @@
-﻿using System;
+﻿using feedbackFlowAPI.DTOs;
+using System;
 using System.Collections.Generic;
 
 namespace feedbackFlowAPI.Entities;
@@ -7,7 +8,7 @@ public class StudentResult
 {
     public int Id { get; set; }
 
-    public string? TeacherPoint { get; set; }
+    public int? TeacherPoint { get; set; }
 
     public string? TeacherFeedback { get; set; }
 
@@ -34,4 +35,7 @@ public class StudentResult
     public User Student { get; set; } = null!;
 
     public ICollection<Mistake> Mistakes { get; set; } = new List<Mistake>();
+
+
+    public StudentResult() { }
 }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using feedbackFlowAPI.Services.Interfaces;
+using feedbackFlowAPI.Services.Implementations;
 
 namespace feedbackFlowAPI
 {
@@ -16,6 +18,8 @@ namespace feedbackFlowAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<IStudentResultsService, StudentResultsService>();
+
             builder.Services
                 .AddControllers()
                 .AddJsonOptions(o =>
