@@ -58,6 +58,16 @@ namespace feedbackFlowAPI
 
             app.UseAuthorization();
 
+            app.MapGet("/", () => Results.Ok(new
+            {
+                message = "FeedbackFlow API kører",
+                health = "/health",
+                users = "/api/users",
+                openApi = "/openapi/v1.json"
+            }));
+
+            app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+
             app.MapControllers();
 
             app.Run();

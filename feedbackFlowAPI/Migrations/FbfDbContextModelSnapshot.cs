@@ -108,13 +108,13 @@ namespace feedbackFlowAPI.Migrations
 
             modelBuilder.Entity("UserUserRole", b =>
                 {
-                    b.Property<int>("UserRoleId")
+                    b.Property<int>("UserRolesId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserRoleId", "UsersId");
+                    b.HasKey("UserRolesId", "UsersId");
 
                     b.HasIndex("UsersId");
 
@@ -168,7 +168,7 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassLevel")
+                    b.Property<ClassLevel>("ClassLevel")
                         .HasColumnType("class_level")
                         .HasColumnName("class_level");
 
@@ -180,8 +180,9 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<int>("Education")
-                        .HasColumnType("integer");
+                    b.Property<Education>("Education")
+                        .HasColumnType("education")
+                        .HasColumnName("education");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -359,7 +360,7 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassLevel")
+                    b.Property<ClassLevel>("ClassLevel")
                         .HasColumnType("class_level")
                         .HasColumnName("class_level");
 
@@ -371,11 +372,11 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<int>("Education")
+                    b.Property<Education>("Education")
                         .HasColumnType("education")
                         .HasColumnName("education");
 
-                    b.Property<int>("ExamType")
+                    b.Property<ExamType>("ExamType")
                         .HasColumnType("exam_type")
                         .HasColumnName("exam_type");
 
@@ -384,7 +385,7 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("img_src");
 
-                    b.Property<int>("NewOldSystem")
+                    b.Property<NewOldSystem>("NewOldSystem")
                         .HasColumnType("new_old_system")
                         .HasColumnName("new_old_system");
 
@@ -393,19 +394,19 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("points");
 
-                    b.Property<int>("QuestionContext")
+                    b.Property<QuestionContext>("QuestionContext")
                         .HasColumnType("question_context")
                         .HasColumnName("question_context");
 
-                    b.Property<int>("QuestionDifficulty")
+                    b.Property<QuestionDifficulty>("QuestionDifficulty")
                         .HasColumnType("question_difficulty")
                         .HasColumnName("question_difficulty");
 
-                    b.Property<int>("QuestionMethodRequirement")
+                    b.Property<QuestionMethodRequirement>("QuestionMethodRequirement")
                         .HasColumnType("question_method_requirement")
                         .HasColumnName("question_method_requirement");
 
-                    b.Property<int>("StandardQuestion")
+                    b.Property<StandardQuestion>("StandardQuestion")
                         .HasColumnType("standard_question")
                         .HasColumnName("standard_question");
 
@@ -453,7 +454,7 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("url");
 
-                    b.Property<int>("Visibility")
+                    b.Property<Visibility>("Visibility")
                         .HasColumnType("visibility")
                         .HasColumnName("visibility");
 
@@ -821,7 +822,7 @@ namespace feedbackFlowAPI.Migrations
                 {
                     b.HasOne("feedbackFlowAPI.Entities.UserRole", null)
                         .WithMany()
-                        .HasForeignKey("UserRoleId")
+                        .HasForeignKey("UserRolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -905,21 +906,21 @@ namespace feedbackFlowAPI.Migrations
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionQuestionSet", b =>
                 {
                     b.HasOne("feedbackFlowAPI.Entities.Question", "Question")
-                        .WithMany("QuestionSet")
+                        .WithMany("QuestionSets")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_questions_to_questionquestionset");
 
                     b.HasOne("feedbackFlowAPI.Entities.QuestionSet", "QuestionSet")
-                        .WithMany("Question")
+                        .WithMany("Questions")
                         .HasForeignKey("QuestionSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_questionsets_to_questionquestionset");
 
                     b.HasOne("feedbackFlowAPI.Entities.Subject", "Subject")
-                        .WithMany("QuestionQuestionSet")
+                        .WithMany("QuestionQuestionSets")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -994,23 +995,23 @@ namespace feedbackFlowAPI.Migrations
 
                     b.Navigation("QuestionCollections");
 
-                    b.Navigation("QuestionSet");
+                    b.Navigation("QuestionSets");
 
                     b.Navigation("StudentResults");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionSet", b =>
                 {
-                    b.Navigation("Question");
-
                     b.Navigation("QuestionAnswers");
+
+                    b.Navigation("Questions");
 
                     b.Navigation("StudentResults");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.Subject", b =>
                 {
-                    b.Navigation("QuestionQuestionSet");
+                    b.Navigation("QuestionQuestionSets");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.User", b =>

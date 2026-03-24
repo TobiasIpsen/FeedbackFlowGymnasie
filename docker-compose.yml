@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   db:
@@ -11,8 +9,9 @@ services:
     networks:
       - backend
     environment:
-      POSTGRES_USER: [SET USERNAME HERE]
-      POSTGRES_PASSWORD: [SET PASSWORD HERE]
+      POSTGRES_DB: feedbackflow
+      POSTGRES_USER: feedbackflow_user
+      POSTGRES_PASSWORD: feedbackflow_pass
     volumes:
       - ./data:/var/lib/postgresql
     ports:
@@ -27,14 +26,14 @@ services:
     depends_on:
       - db
     volumes:
-      - ./pgadmin-data:/pgadmin
+      - ./pgadmin-data:/var/lib/pgadmin
     ports:
       - "8082:80"
     networks:
       - backend
     environment:
-      PGADMIN_DEFAULT_EMAIL: [SET EMAIL HERE]
-      PGADMIN_DEFAULT_PASSWORD: [SET PASSWORD HERE]
+      PGADMIN_DEFAULT_EMAIL: admin@feedbackflow.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
 
 networks:
   backend:
