@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.DTOs;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -45,14 +46,37 @@ namespace feedbackFlowAPI.Controllers
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(int id, Question question)
+        public async Task<IActionResult> PutQuestion(int id, QuestionUpsertDTO questionDto)
         {
-            if (id != question.Id)
+            var question = await _context.Questions.FindAsync(id);
+            if (question == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(question).State = EntityState.Modified;
+            if (!await _context.Users.AnyAsync(u => u.Id == questionDto.UserId))
+            {
+                return BadRequest("UserId does not exist.");
+            }
+
+            if (questionDto.CourseId.HasValue && !await _context.Courses.AnyAsync(c => c.Id == questionDto.CourseId.Value))
+            {
+                return BadRequest("CourseId does not exist.");
+            }
+
+            question.ImgSrc = questionDto.ImgSrc;
+            question.Points = questionDto.Points;
+            question.DeletedAt = questionDto.DeletedAt;
+            question.ExamType = questionDto.ExamType;
+            question.ClassLevel = questionDto.ClassLevel;
+            question.QuestionDifficulty = questionDto.QuestionDifficulty;
+            question.QuestionMethodRequirement = questionDto.QuestionMethodRequirement;
+            question.Education = questionDto.Education;
+            question.QuestionContext = questionDto.QuestionContext;
+            question.StandardQuestion = questionDto.StandardQuestion;
+            question.NewOldSystem = questionDto.NewOldSystem;
+            question.CourseId = questionDto.CourseId;
+            question.UserId = questionDto.UserId;
 
             try
             {
@@ -76,8 +100,35 @@ namespace feedbackFlowAPI.Controllers
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(Question question)
+        public async Task<ActionResult<Question>> PostQuestion(QuestionUpsertDTO questionDto)
         {
+            if (!await _context.Users.AnyAsync(u => u.Id == questionDto.UserId))
+            {
+                return BadRequest("UserId does not exist.");
+            }
+
+            if (questionDto.CourseId.HasValue && !await _context.Courses.AnyAsync(c => c.Id == questionDto.CourseId.Value))
+            {
+                return BadRequest("CourseId does not exist.");
+            }
+
+            var question = new Question
+            {
+                ImgSrc = questionDto.ImgSrc,
+                Points = questionDto.Points,
+                DeletedAt = questionDto.DeletedAt,
+                ExamType = questionDto.ExamType,
+                ClassLevel = questionDto.ClassLevel,
+                QuestionDifficulty = questionDto.QuestionDifficulty,
+                QuestionMethodRequirement = questionDto.QuestionMethodRequirement,
+                Education = questionDto.Education,
+                QuestionContext = questionDto.QuestionContext,
+                StandardQuestion = questionDto.StandardQuestion,
+                NewOldSystem = questionDto.NewOldSystem,
+                CourseId = questionDto.CourseId,
+                UserId = questionDto.UserId
+            };
+
             _context.Questions.Add(question);
             try
             {
