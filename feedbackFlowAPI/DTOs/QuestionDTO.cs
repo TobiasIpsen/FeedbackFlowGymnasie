@@ -4,7 +4,7 @@ using feedbackFlowAPI.Helpers;
 
 namespace feedbackFlowAPI.DTOs
 {
-    public class QuestionDto
+    public class QuestionDTO
     {
         [Required]
         public string ImgSrc { get; set; } = null!;
