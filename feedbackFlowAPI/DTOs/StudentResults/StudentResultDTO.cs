@@ -5,7 +5,7 @@ namespace feedbackFlowAPI.DTOs.StudentResults;
 
 public class StudentResultDTO
 {
-    public string? TeacherPoint { get; set; }
+    public int? TeacherPoint { get; set; }
 
     public string? TeacherFeedback { get; set; }
 
