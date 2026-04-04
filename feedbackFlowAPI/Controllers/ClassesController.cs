@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.Services.Interfaces;
+using feedbackFlowAPI.DTOs;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -14,109 +16,30 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class ClassesController : ControllerBase
     {
-        private readonly FbfDbContext _context;
 
-        public ClassesController(FbfDbContext context)
+        private readonly IClassService _service;
+
+        public ClassesController(IClassService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Classes
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Class>>> GetClasses()
-        {
-            return await _context.Classes.ToListAsync();
-        }
 
-        // GET: api/Classes/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Class>> GetClass(int id)
-        {
-            var schoolclass = await _context.Classes.FindAsync(id);
-
-            if (schoolclass == null)
-            {
-                return NotFound();
-            }
-
-            return schoolclass;
-        }
-
-        // PUT: api/Classes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClass(int id, Class schoolclass)
-        {
-            if (id != schoolclass.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(schoolclass).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClassExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Classes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Class>> PostClass(Class schoolclass)
+        public async Task<ActionResult<ClassDTO>> PostClass(ClassDTO dto)
         {
-            _context.Classes.Add(schoolclass);
             try
             {
-                await _context.SaveChangesAsync();
+                return await _service.CreateClass(dto);
             }
-            catch (DbUpdateException)
+            catch (InvalidOperationException ex)
             {
-                if (ClassExists(schoolclass.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict(ex.Message);
             }
-
-            return CreatedAtAction("GetClass", new { id = schoolclass.Id }, schoolclass);
-        }
-
-        // DELETE: api/Classes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClass(int id)
-        {
-            var schoolclass = await _context.Classes.FindAsync(id);
-            if (schoolclass == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return Conflict(ex.Message);
             }
-
-            _context.Classes.Remove(schoolclass);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ClassExists(int id)
-        {
-            return _context.Classes.Any(e => e.Id == id);
         }
     }
 }
