@@ -1,7 +1,6 @@
 ﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Mappers.Interface;
-using Humanizer;
 
 namespace feedbackFlowAPI.Mappers.Implementations
 {

@@ -30,7 +30,8 @@ namespace feedbackFlowAPI.Controllers
         {
             try
             {
-                return await _service.CreateClass(dto);
+                ClassDTO createdDto = await _service.CreateClass(dto);
+                return Created(Request.Path.Value ?? string.Empty, createdDto);
             }
             catch (InvalidOperationException ex)
             {

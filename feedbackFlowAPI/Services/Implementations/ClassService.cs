@@ -1,10 +1,8 @@
 ﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
-using feedbackFlowAPI.Mappers.Implementations;
 using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Npgsql;
@@ -33,11 +31,7 @@ namespace feedbackFlowAPI.Services.Implementations
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == PostgresErrorCodes.UniqueViolation)
             {
-                throw new Exception($"Constraint {pgEx.ConstraintName} violated");
-            }
-            catch (Exception)
-            {
-                throw;
+                throw new InvalidOperationException($"Constraint {pgEx.ConstraintName} violated");
             }
 
             return _mapper.ToDTO(result.Entity);
