@@ -26,7 +26,7 @@ namespace feedbackFlowAPI.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ClassDTO>> PostClass(ClassDTO dto)
+        public async Task<ActionResult<ClassDTO>> PostClass([FromBody] ClassDTO dto)
         {
             try
             {
