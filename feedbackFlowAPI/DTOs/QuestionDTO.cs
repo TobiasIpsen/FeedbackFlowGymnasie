@@ -15,32 +15,32 @@ namespace feedbackFlowAPI.DTOs
         public DateTimeOffset? DeletedAt { get; set; }
 
         [Required]
-        public ExamType ExamType { get; set; }
+        public ExamType? ExamType { get; set; }
 
         [Required]
-        public ClassLevel ClassLevel { get; set; }
+        public ClassLevel? ClassLevel { get; set; }
 
         [Required]
-        public QuestionDifficulty QuestionDifficulty { get; set; }
+        public QuestionDifficulty? QuestionDifficulty { get; set; }
 
         [Required]
-        public QuestionMethodRequirement QuestionMethodRequirement { get; set; }
+        public QuestionMethodRequirement? QuestionMethodRequirement { get; set; }
 
         [Required]
-        public Education Education { get; set; }
+        public Education? Education { get; set; }
 
         [Required]
-        public QuestionContext QuestionContext { get; set; }
+        public QuestionContext? QuestionContext { get; set; }
 
         [Required]
-        public StandardQuestion StandardQuestion { get; set; }
+        public StandardQuestion? StandardQuestion { get; set; }
 
         [Required]
-        public NewOldSystem NewOldSystem { get; set; }
+        public NewOldSystem? NewOldSystem { get; set; }
 
         public int? CourseId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
     }
 }

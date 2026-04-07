@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.Interface;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -15,25 +16,26 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class QuestionsController : ControllerBase
     {
-        private readonly FbfDbContext _context;
+        private readonly IQuestionService _questionService;
 
-        public QuestionsController(FbfDbContext context)
+        public QuestionsController(IQuestionService questionService)
         {
-            _context = context;
+            _questionService = questionService;
         }
 
         // GET: api/Questions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
-            return await _context.Questions.ToListAsync();
+            var questions = await _questionService.GetQuestionsAsync();
+            return Ok(questions);
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Question>> GetQuestion(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
+            var question = await _questionService.GetQuestionByIdAsync(id);
 
             if (question == null)
             {
@@ -53,22 +55,17 @@ namespace feedbackFlowAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(question).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!QuestionExists(id))
+                var wasUpdated = await _questionService.UpdateQuestionAsync(question);
+                if (!wasUpdated)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
             }
 
             return NoContent();
@@ -77,27 +74,28 @@ namespace feedbackFlowAPI.Controllers
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(QuestionDto questionDto)
+        public async Task<ActionResult<Question>> PostQuestion(QuestionDTO questionDto)
         {
-            var question = new Question
+            if (questionDto == null)
             {
-                ImgSrc = questionDto.ImgSrc,
-                Points = questionDto.Points,
-                DeletedAt = questionDto.DeletedAt,
-                ExamType = questionDto.ExamType,
-                ClassLevel = questionDto.ClassLevel,
-                QuestionDifficulty = questionDto.QuestionDifficulty,
-                QuestionMethodRequirement = questionDto.QuestionMethodRequirement,
-                Education = questionDto.Education,
-                QuestionContext = questionDto.QuestionContext,
-                StandardQuestion = questionDto.StandardQuestion,
-                NewOldSystem = questionDto.NewOldSystem,
-                CourseId = questionDto.CourseId,
-                UserId = questionDto.UserId
-            };
+                return BadRequest(new { message = "Request body is required." });
+            }
 
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            var (question, errors) = await _questionService.CreateQuestionAsync(questionDto);
+            if (errors.Count > 0)
+            {
+                return BadRequest(new { errors });
+            }
+
+            if (question == null)
+            {
+                return BadRequest(new { message = "Unable to create question from provided values." });
+            }
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
         }
@@ -106,21 +104,13 @@ namespace feedbackFlowAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
+            var wasDeleted = await _questionService.DeleteQuestionAsync(id);
+            if (!wasDeleted)
             {
                 return NotFound();
             }
 
-            _context.Questions.Remove(question);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool QuestionExists(int id)
-        {
-            return _context.Questions.Any(e => e.Id == id);
         }
     }
 }

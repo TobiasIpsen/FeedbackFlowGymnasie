@@ -1,5 +1,7 @@
 ﻿
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.Interface;
+using feedbackFlowAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +44,8 @@ namespace feedbackFlowAPI
                         o.MapEnum<NewOldSystem>("new_old_system");
                     });
             });
+
+                    builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
