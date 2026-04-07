@@ -19,6 +19,7 @@ namespace feedbackFlowAPI
 
             // Add services to the container.
             builder.Services.AddScoped<IStudentResultsService, StudentResultsService>();
+            builder.Services.AddScoped<IClassStudentsService, ClassStudentsService>();
 
             builder.Services
                 .AddControllers()
