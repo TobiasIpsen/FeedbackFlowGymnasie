@@ -1,9 +1,8 @@
 ﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
-using feedbackFlowAPI.Mappers;
+using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -12,10 +11,12 @@ namespace feedbackFlowAPI.Services.Implementations
     public class StudentResultsService : IStudentResultsService
     {
         private FbfDbContext _context;
+        private readonly IStudentResultMapper _mapper;
 
-        public StudentResultsService(FbfDbContext context)
+        public StudentResultsService(FbfDbContext context, IStudentResultMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<TeacherFeedbackDTO> SaveTeacherFeedbackAsync(int studentId, int questionSetId, int questionId, TeacherFeedbackDTO dto)
@@ -32,7 +33,7 @@ namespace feedbackFlowAPI.Services.Implementations
                 throw new InvalidOperationException("Teacher feedback already exists");
             }
 
-            StudentResult entity = StudentResultMapper.ToEntity(
+            StudentResult entity = _mapper.ToEntity(
                 dto,
                 studentId,
                 questionSetId,
@@ -42,7 +43,7 @@ namespace feedbackFlowAPI.Services.Implementations
             EntityEntry<StudentResult> result = await _context.StudentResults.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            return StudentResultMapper.ToDTO(result.Entity);
+            return _mapper.ToDTO(result.Entity);
         }
     }
 }

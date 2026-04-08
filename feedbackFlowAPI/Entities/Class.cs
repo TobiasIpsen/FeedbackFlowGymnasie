@@ -22,5 +22,9 @@ public class Class
 
     public Course Course { get; set; } = null!;
 
-    public ICollection<User>? Users { get; set; } = new List<User>();
+    public int TeacherId { get; set; }
+    
+    public User Teacher { get; set; } = null!;
+
+    public ICollection<User> Students { get; set; } = new List<User>();
 }

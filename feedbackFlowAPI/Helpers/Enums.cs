@@ -2,6 +2,9 @@
 
 namespace feedbackFlowAPI.Helpers
 {
+    /// <summary>
+    /// Niveau. A, B, C, D
+    /// </summary>
     public enum ClassLevel
     {
         A,
