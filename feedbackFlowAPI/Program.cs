@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using feedbackFlowAPI.Services.Interfaces;
 using feedbackFlowAPI.Services.Implementations;
+using feedbackFlowAPI.Mappers.Interface;
+using feedbackFlowAPI.Mappers.Implementations;
 
 namespace feedbackFlowAPI
 {
@@ -19,6 +21,9 @@ namespace feedbackFlowAPI
 
             // Add services to the container.
             builder.Services.AddScoped<IStudentResultsService, StudentResultsService>();
+            builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
+            builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
+            builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
 
             builder.Services
                 .AddControllers()
