@@ -1,5 +1,4 @@
 ﻿using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.DTOs.StudentResults;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Mappers.Interface;
 
@@ -31,21 +30,6 @@ namespace feedbackFlowAPI.Mappers.Implementations
                 TeacherPoint = entity.TeacherPoint,
                 TeacherFeedback = entity.TeacherFeedback,
                 TeacherId = entity.TeacherId
-            };
-        }
-
-        public StudentResultDTO StudentResultToDTO(StudentResult entity)
-        {
-            return new StudentResultDTO
-            {
-                TeacherPoint = entity.TeacherPoint,
-                TeacherFeedback = entity.TeacherFeedback,
-                StudentSelfAssessmentPoints = entity.StudentSelfAssessmentPoints,
-                CreatedAt = entity.CreatedAt,
-                DeletedAt = entity.DeletedAt,
-                TeacherId = entity.TeacherId,
-                QuestionId = entity.QuestionId,
-                QuestionSetId = entity.QuestionSetId
             };
         }
     }
