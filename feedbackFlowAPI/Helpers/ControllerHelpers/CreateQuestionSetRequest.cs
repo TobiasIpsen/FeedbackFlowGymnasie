@@ -4,8 +4,8 @@ namespace feedbackFlowAPI.Helpers.ControllerHelpers
 {
     public class CreateQuestionSetRequest
     {
-        public List<int> QuestionIds { get; set; } = new List<int>();
-        public QuestionSetDTO Set { get; set; }
-        public int SubjectId { get; set; }
+        public required List<int> QuestionIds { get; set; } = new List<int>();
+        public required QuestionSetDTO Set { get; set; }
+        public required int SubjectId { get; set; }
     }
 }
