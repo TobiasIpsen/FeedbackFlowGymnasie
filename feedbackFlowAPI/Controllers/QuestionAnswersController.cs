@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.DTOs; 
+using feedbackFlowAPI.Services.Interfaces;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -15,11 +17,44 @@ namespace feedbackFlowAPI.Controllers
     public class QuestionAnswersController : ControllerBase
     {
         private readonly FbfDbContext _context;
+        private readonly IStorageService _storageService;
 
-        public QuestionAnswersController(FbfDbContext context)
+        public QuestionAnswersController(FbfDbContext context, IStorageService storageService)
         {
             _context = context;
+            _storageService = storageService;
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAnswer([FromForm] QuestionAnswerDTO dto)
+        {
+            string fileUrl = null;
+
+            if (dto.File != null)
+            {
+               
+                fileUrl = await _storageService.UploadFileAsync(dto.File, "question-answers");
+
+            }
+
+            var newAnswer = new QuestionAnswer
+            {
+                Name = dto.Name,
+                Url = fileUrl,                               
+            };
+
+            _context.QuestionAnswers.Add(newAnswer);
+            await _context.SaveChangesAsync();
+
+            return Ok(newAnswer);
+        }
+
+
+
+
+
+
 
         // GET: api/QuestionAnswers
         [HttpGet]
@@ -71,31 +106,6 @@ namespace feedbackFlowAPI.Controllers
             }
 
             return NoContent();
-        }
-
-        // POST: api/QuestionAnswers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<QuestionAnswer>> PostQuestionanswer(QuestionAnswer questionanswer)
-        {
-            _context.QuestionAnswers.Add(questionanswer);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (QuestionanswerExists(questionanswer.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetQuestionanswer", new { id = questionanswer.Id }, questionanswer);
         }
 
         // DELETE: api/QuestionAnswers/5

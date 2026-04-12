@@ -9,5 +9,7 @@ public partial class QuestionAnswerDTO
 
     public string? Url { get; set; }
 
+    public IFormFile? File { get; set; }
+
     public DateTimeOffset? DeletedAt { get; set; }
 }
