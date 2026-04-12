@@ -10,5 +10,6 @@ namespace feedbackFlowAPI.Services.Interfaces
         public Task<List<MistakeTypeDTO>> GetMistakeTypesAsync();
         public Task<List<MistakeTypeDTO>?> GetAssignedMistakesAsync(int studentId, int questionSetId, int questionId, int teacherId);
         public Task<(bool Success, string? Error)> AssignMistakesAsync(int studentId, int questionSetId, int questionId, AssignMistakesDTO dto);
+        public Task<StudentResultDTO> CreateStudentSelfAssessmentAsync(int studentId, int questionSetId, int questionId, StudentSelfAssessmentDTO selfAssessmentPoint);
     }
 }

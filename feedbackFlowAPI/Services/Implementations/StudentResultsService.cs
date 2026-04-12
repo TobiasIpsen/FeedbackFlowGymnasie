@@ -123,5 +123,36 @@ namespace feedbackFlowAPI.Services.Implementations
 
             return (true, null);
         }
+
+        public async Task<StudentResultDTO> CreateStudentSelfAssessmentAsync(int studentId, int questionSetId, int questionId, StudentSelfAssessmentDTO selfAssessmentPoint)
+        {
+            StudentResult? res = await _context.StudentResults
+                    .FirstOrDefaultAsync(s =>
+                        s.StudentId == studentId &&
+                        s.QuestionSetId == questionSetId &&
+                        s.QuestionId == questionId);
+
+
+            if (res == null)
+            {
+                QuestionSet? questionSet = await _context.QuestionSets.FindAsync(questionSetId);
+                if (questionSet == null) throw new Exception("Questionset not found");
+                res = new StudentResult
+                {
+                    StudentId = studentId,
+                    QuestionSetId = questionSetId,
+                    QuestionId = questionId,
+                    TeacherId = questionSet.TeacherId
+                };
+                await _context.StudentResults.AddAsync(res);
+            }
+
+
+            res.StudentSelfAssessmentPoints = selfAssessmentPoint.points;
+
+            await _context.SaveChangesAsync();
+
+            return _mapper.StudentResultToDTO(res);
+        }
     }
 }

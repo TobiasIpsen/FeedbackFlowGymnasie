@@ -113,5 +113,22 @@ namespace feedbackFlowAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPut("{studentId:int}/questionSets/{questionSetId:int}/questions/{questionId:int}/selfassessment")]
+        public async Task<ActionResult<StudentResultDTO>> CreateStudentSelfAssessment(
+            [FromRoute] int studentId,
+            [FromRoute] int questionSetId,
+            [FromRoute] int questionId,
+            [FromBody] StudentSelfAssessmentDTO selfAssessmentPoint)
+        {
+            try
+            {
+                return await _service.CreateStudentSelfAssessmentAsync(studentId, questionSetId, questionId, selfAssessmentPoint);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
     }
 }
