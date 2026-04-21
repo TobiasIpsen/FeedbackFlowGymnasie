@@ -1,11 +1,12 @@
 ﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
+using feedbackFlowAPI.Mappers.Interface;
 
-namespace feedbackFlowAPI.Mappers
+namespace feedbackFlowAPI.Mappers.Implementations
 {
-    public static class StudentResultMapper
+    public class StudentResultMapper : IStudentResultMapper
     {
-        public static StudentResult ToEntity(
+        public StudentResult ToEntity(
             TeacherFeedbackDTO dto,
             int studentId,
             int questionSetId,
@@ -22,7 +23,7 @@ namespace feedbackFlowAPI.Mappers
             };
         }
 
-        public static TeacherFeedbackDTO ToDTO(StudentResult entity)
+        public TeacherFeedbackDTO ToDTO(StudentResult entity)
         {
             return new TeacherFeedbackDTO
             {

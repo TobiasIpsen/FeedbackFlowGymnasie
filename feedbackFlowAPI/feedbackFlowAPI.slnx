@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../UnitTests/UnitTests.csproj" Id="aa1f8295-cbe7-49e0-92b4-6e1dd2282289" />
   <Project Path="feedbackFlowAPI.csproj" />
 </Solution>
