@@ -8,42 +8,44 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace feedbackFlowAPI.Services.Implementations;
 
-    public class QuestionAnswerService: IQuestionAnswerService
+public class QuestionAnswerService : IQuestionAnswerService
+{
+    private FbfDbContext _context;
+    private readonly IStorageService _storageService;
+
+    public QuestionAnswerService(FbfDbContext context, IStorageService storageService)
     {
-        private FbfDbContext _context;
-        private readonly IStorageService _storageService;
+        _context = context;
+        _storageService = storageService;
+    }
 
-        public QuestionAnswerService(FbfDbContext context, IStorageService storageService) 
+    public async Task<QuestionAnswerDTO> SubmitAnswer(QuestionAnswerDTO dto)
+    {
+        string? fileUrl = null;
+
+        // Upload fil hvis den findes
+        if (dto.File != null)
         {
-            _context = context;
-             _storageService = storageService;
+            fileUrl = await _storageService.UploadFileAsync(dto.File, "question-answers");
         }
 
-        public async Task<QuestionAnswerDTO> SubmitAnswer(QuestionAnswerDTO dto)
+        var questionAnswer = new QuestionAnswer
         {
-            string? fileUrl = null;
+            Name = dto.Name,
+            Url = fileUrl, // brug uploadet fil
+            DeletedAt = dto.DeletedAt,
+            QuestionId = dto.QuestionId
+        };
 
-            // Upload fil hvis den findes
-            if (dto.File != null)
-            {
-                fileUrl = await _storageService.UploadFileAsync(dto.File, "question-answers");
-            }
+        var entry = await _context.QuestionAnswers.AddAsync(questionAnswer);
+        await _context.SaveChangesAsync();
 
-            var questionAnswer = new QuestionAnswer
-            {
-                Name = dto.Name,
-                Url = fileUrl, // brug uploadet fil
-                DeletedAt = dto.DeletedAt
-            };
-
-            var entry = await _context.QuestionAnswers.AddAsync(questionAnswer);
-            await _context.SaveChangesAsync();
-
-            return new QuestionAnswerDTO
-            {
-                Name = entry.Entity.Name,
-                Url = entry.Entity.Url,
-                DeletedAt = entry.Entity.DeletedAt
-            };
-        }
-    
+        return new QuestionAnswerDTO
+        {
+            Name = entry.Entity.Name,
+            Url = entry.Entity.Url, // url for hvor billedet ligger i storage
+            DeletedAt = entry.Entity.DeletedAt,
+            QuestionId = dto.QuestionId
+        };
+    }
+}

@@ -16,102 +16,32 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class QuestionAnswersController : ControllerBase
     {
-        private readonly FbfDbContext _context;
-        private readonly IStorageService _storageService;
+        private readonly IQuestionAnswerService _qaService;
 
-        public QuestionAnswersController(FbfDbContext context, IStorageService storageService)
+        public QuestionAnswersController(IQuestionAnswerService qaService)
         {
-            _context = context;
-            _storageService = storageService;
+            _qaService = qaService;
         }
 
 
         [HttpPost]
         public async Task<IActionResult> SubmitAnswer([FromForm] QuestionAnswerDTO dto)
         {
-
- 
-
-            return Ok(newAnswer);
-        }
-
-
-
-
-
-
-
-        // GET: api/QuestionAnswers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<QuestionAnswer>>> GetQuestionanswers()
-        {
-            return await _context.QuestionAnswers.ToListAsync();
-        }
-
-        // GET: api/QuestionAnswers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<QuestionAnswer>> GetQuestionanswer(int id)
-        {
-            var questionanswer = await _context.QuestionAnswers.FindAsync(id);
-
-            if (questionanswer == null)
-            {
-                return NotFound();
-            }
-
-            return questionanswer;
-        }
-
-        // PUT: api/QuestionAnswers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestionanswer(int id, QuestionAnswer questionanswer)
-        {
-            if (id != questionanswer.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(questionanswer).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                
+                var result = await _qaService.SubmitAnswer(dto);
+
+                
+                return Ok(result);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!QuestionanswerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                
+                return BadRequest(new { message = ex.Message });
             }
 
-            return NoContent();
         }
 
-        // DELETE: api/QuestionAnswers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuestionanswer(int id)
-        {
-            var questionanswer = await _context.QuestionAnswers.FindAsync(id);
-            if (questionanswer == null)
-            {
-                return NotFound();
-            }
-
-            _context.QuestionAnswers.Remove(questionanswer);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool QuestionanswerExists(int id)
-        {
-            return _context.QuestionAnswers.Any(e => e.Id == id);
-        }
     }
 }
