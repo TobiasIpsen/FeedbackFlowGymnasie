@@ -26,6 +26,8 @@ namespace feedbackFlowAPI
             builder.Services.AddScoped<IClassService, ClassService>();
             builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
             builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
+            builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             builder.Services
                 .AddControllers()
