@@ -131,27 +131,14 @@ namespace feedbackFlowAPI.Services.Implementations
                         s.StudentId == studentId &&
                         s.QuestionSetId == questionSetId &&
                         s.QuestionId == questionId);
+            if (res == null) throw new Exception("Teacher feedback doesn't exist yet.");
 
-
-            if (res == null)
-            {
-                QuestionSet? questionSet = await _context.QuestionSets.FindAsync(questionSetId);
-                if (questionSet == null) throw new Exception("Questionset not found");
-                res = new StudentResult
-                {
-                    StudentId = studentId,
-                    QuestionSetId = questionSetId,
-                    QuestionId = questionId,
-                    TeacherId = questionSet.TeacherId
-                };
-                await _context.StudentResults.AddAsync(res);
-            }
+            QuestionSet? questionSet = await _context.QuestionSets.FindAsync(questionSetId);
+            if (questionSet == null) throw new Exception("Questionset not found");
 
 
             res.StudentSelfAssessmentPoints = selfAssessmentPoint.points;
-
             await _context.SaveChangesAsync();
-
             return _mapper.StudentResultToDTO(res);
         }
     }
