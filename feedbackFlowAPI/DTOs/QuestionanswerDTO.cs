@@ -12,4 +12,6 @@ public partial class QuestionAnswerDTO
     public IFormFile? File { get; set; }
 
     public DateTimeOffset? DeletedAt { get; set; }
+
+    public int QuestionId { get; set; }
 }

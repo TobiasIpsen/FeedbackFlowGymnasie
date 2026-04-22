@@ -29,23 +29,8 @@ namespace feedbackFlowAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> SubmitAnswer([FromForm] QuestionAnswerDTO dto)
         {
-            string fileUrl = null;
 
-            if (dto.File != null)
-            {
-               
-                fileUrl = await _storageService.UploadFileAsync(dto.File, "question-answers");
-
-            }
-
-            var newAnswer = new QuestionAnswer
-            {
-                Name = dto.Name,
-                Url = fileUrl,                               
-            };
-
-            _context.QuestionAnswers.Add(newAnswer);
-            await _context.SaveChangesAsync();
+ 
 
             return Ok(newAnswer);
         }
