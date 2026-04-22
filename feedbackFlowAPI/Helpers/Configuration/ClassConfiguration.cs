@@ -10,10 +10,6 @@ namespace feedbackFlowAPI.Helpers.Configuration
         {
             entity.HasKey(e => e.Id).HasName("classes_pkey");
 
-            entity.HasIndex(e => e.Name)
-                .IsUnique()
-                .HasFilter("\"deleted_at\" IS NULL");
-
             entity.ToTable("classes");
 
             entity.Property(e => e.Id)
