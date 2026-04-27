@@ -13,6 +13,7 @@
 	@if (!string.IsNullOrWhiteSpace(successMessage))
 	{
 		<p class="form-success">@successMessage</p>
+		<a class="cta-link" href="/teacher/sets/new">Ga til opgavesaet</a>
 	}
 
 	@if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -20,7 +21,7 @@
 		<p class="form-error">@errorMessage</p>
 	}
 
-	<EditForm Model="form" OnValidSubmit="CreateQuestionAsync">
+	<EditForm Model="form" OnValidSubmit="CreateQuestionAsync" FormName="createQuestionForm">
 		<div class="form-grid">
 			<div class="field-block">
 				<label for="points">Point / opgaveindhold</label>
@@ -170,9 +171,9 @@
 
 		form.DeletedAt = markAsDeleted ? DateTimeOffset.UtcNow : null;
 
-		await QuestionService.CreateQuestionAsync(form);
+		var createdQuestion = await QuestionService.CreateQuestionAsync(form);
 
-		successMessage = "Spoergsmaalet er oprettet.";
+		successMessage = $"Spoergsmaalet er oprettet og gemt (ID: {createdQuestion.Id}).";
 		ResetForm();
 	}
 
