@@ -7,7 +7,7 @@
 <PageTitle>Opret Spoergsmaal</PageTitle>
 
 <section class="glass-card reveal-up teacher-create-wrap">
-	<h1>Opret spoergsmaal</h1>
+	<h1>Opret spørgsmaal</h1>
 	<p class="lead-text">Udgangspunktet er QuestionDTO med ekstra ja/nej-valg og afkrydsninger til laererens oprettelse.</p>
 
 	@if (!string.IsNullOrWhiteSpace(successMessage))
@@ -53,7 +53,7 @@
 			</div>
 
 			<div class="field-block">
-				<label for="difficulty">Svaerhedsgrad</label>
+				<label for="difficulty">Sværhedsgrad</label>
 				<InputSelect id="difficulty" class="form-control" @bind-Value="form.QuestionDifficulty">
 					@foreach (var difficulty in Enum.GetValues<QuestionDifficulty>())
 					{
@@ -75,7 +75,7 @@
 			</fieldset>
 
 			<fieldset class="toggle-card">
-				<legend>Standardspoergsmaal?</legend>
+				<legend>Standardspørgsmål?</legend>
 				<label class="choice-row">
 					<InputRadioGroup @bind-Value="isStandardQuestion">
 						<InputRadio Value="true" /> Ja
@@ -90,12 +90,12 @@
 
 			<label class="check-row">
 				<InputCheckbox @bind-Value="requiresFormula" />
-				<span>Kraever anvendelse af formel</span>
+				<span>Kræver anvendelse af formel</span>
 			</label>
 
 			<label class="check-row">
 				<InputCheckbox @bind-Value="requiresSpecificMethod" />
-				<span>Kraever specifik metode</span>
+				<span>Kræver specifik metode</span>
 			</label>
 
 			<label class="check-row">
