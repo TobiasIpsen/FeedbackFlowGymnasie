@@ -74,16 +74,5 @@ namespace feedbackFlowAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{classId}/students/{studentId}")]
-        public async Task<IActionResult> RemoveStudentFromClass(int classId, int studentId)
-        {
-            var success = await _service.RemoveStudentFromClass(classId, studentId);
-            if (!success)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
     }
 }

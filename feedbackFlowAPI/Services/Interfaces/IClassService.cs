@@ -8,6 +8,5 @@ namespace feedbackFlowAPI.Services.Interfaces
         public Task<List<ClassStudentDTO>> GetStudentsForClass(int classId);
         public Task<List<StudentLookupDTO>> SearchStudents(string? query, int? classId);
         public Task<bool> AddStudentToClass(int classId, int studentId);
-        public Task<bool> RemoveStudentFromClass(int classId, int studentId);
     }
 }

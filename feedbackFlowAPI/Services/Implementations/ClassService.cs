@@ -157,27 +157,5 @@ namespace feedbackFlowAPI.Services.Implementations
             return true;
         }
 
-        public async Task<bool> RemoveStudentFromClass(int classId, int studentId)
-        {
-            var classEntity = await _context.Classes
-                .Include(c => c.Students)
-                .FirstOrDefaultAsync(c => c.Id == classId && c.DeletedAt == null);
-
-            if (classEntity == null)
-            {
-                return false;
-            }
-
-            var student = classEntity.Students.FirstOrDefault(s => s.Id == studentId);
-            if (student == null)
-            {
-                return false;
-            }
-
-            classEntity.Students.Remove(student);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
     }
 }
