@@ -1,29 +1,55 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">feedbackFlowFront</a>
+﻿<div class="brand-panel">
+    <div class="brand-text">
+        <p class="brand-kicker">FeedbackFlow</p>
+        <a class="navbar-brand" href="">Gymnasie</a>
     </div>
+    <span class="brand-badge">Beta</span>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<div class="mobile-toggle-row">
+    <span>Navigation</span>
+    <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+</div>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler')?.click()">
+    <nav class="nav flex-column" aria-label="Hovedmenu">
+        <div class="nav-item">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="menu-icon">HM</span>
+                <span>Dashboard</span>
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="student">
+                <span class="menu-icon">ST</span>
+                <span>Elevoversigt</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="teacher">
+                <span class="menu-icon">LA</span>
+                <span>Laereroversigt</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
             <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+                <span class="menu-icon">CO</span>
+                <span>Counter</span>
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+                <span class="menu-icon">WE</span>
+                <span>Weather Demo</span>
             </NavLink>
+        </div>
+
+        <div class="menu-note">
+            Designopgradering: klar til at blive koblet til dine API-services.
         </div>
     </nav>
 </div>
