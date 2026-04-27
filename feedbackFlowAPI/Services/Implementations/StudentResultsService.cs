@@ -123,5 +123,43 @@ namespace feedbackFlowAPI.Services.Implementations
 
             return (true, null);
         }
+
+        public async Task<List<StudentDashboardAssignmentDTO>> GetStudentDashboardAssignmentsAsync(int studentId)
+        {
+            var rows = await _context.StudentResults
+                .AsNoTracking()
+                .Where(sr => sr.StudentId == studentId && sr.DeletedAt == null)
+                .Select(sr => new
+                {
+                    sr.QuestionSetId,
+                    sr.CreatedAt,
+                    sr.QuestionId,
+                    QuestionSetName = sr.QuestionSet.Name,
+                    sr.QuestionSet.IsExam,
+                    TeacherFirstname = sr.Teacher.Firstname,
+                    TeacherLastname = sr.Teacher.Lastname
+                })
+                .ToListAsync();
+
+            var result = rows
+                .GroupBy(r => r.QuestionSetId)
+                .Select(g =>
+                {
+                    var first = g.OrderBy(x => x.CreatedAt).First();
+                    return new StudentDashboardAssignmentDTO
+                    {
+                        QuestionSetId = g.Key,
+                        QuestionSetName = first.QuestionSetName,
+                        IsExam = first.IsExam,
+                        AssignedAt = first.CreatedAt,
+                        QuestionCount = g.Select(x => x.QuestionId).Distinct().Count(),
+                        TeacherName = (first.TeacherFirstname + " " + first.TeacherLastname).Trim()
+                    };
+                })
+                .OrderByDescending(x => x.AssignedAt)
+                .ToList();
+
+            return result;
+        }
     }
 }

@@ -42,5 +42,26 @@ namespace feedbackFlowAPI.Controllers
                 return Conflict(ex.Message);
             }
         }
+
+        [HttpGet("assignable-classes")]
+        public async Task<ActionResult<IEnumerable<ClassListItemDTO>>> GetAssignableClasses()
+        {
+            var classes = await _service.GetAssignableClassesAsync();
+            return Ok(classes);
+        }
+
+        [HttpPost("{questionSetId:int}/assign/classes/{classId:int}")]
+        public async Task<ActionResult<QuestionSetAssignmentResultDTO>> AssignQuestionSetToClass(int questionSetId, int classId)
+        {
+            try
+            {
+                var result = await _service.AssignQuestionSetToClassAsync(questionSetId, classId);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

@@ -18,6 +18,18 @@ namespace feedbackFlowAPI.Controllers
             _service = service;
         }
 
+        [HttpGet("{studentId:int}/dashboard/assignments")]
+        public async Task<ActionResult<IEnumerable<StudentDashboardAssignmentDTO>>> GetDashboardAssignments(int studentId)
+        {
+            if (studentId <= 0)
+            {
+                return BadRequest(new { message = "studentId must be greater than 0." });
+            }
+
+            var assignments = await _service.GetStudentDashboardAssignmentsAsync(studentId);
+            return Ok(assignments);
+        }
+
         [HttpPost("{studentId:int}/questionSets/{questionSetId:int}/questions/{questionId:int}/feedback")]
         public async Task<ActionResult<TeacherFeedbackDTO>> PostStudentResults(
             int studentId,
