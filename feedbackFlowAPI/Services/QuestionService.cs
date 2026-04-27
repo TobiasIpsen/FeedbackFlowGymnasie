@@ -56,41 +56,6 @@ namespace feedbackFlowAPI.Services
             return (question, errors);
         }
 
-        public async Task<bool> UpdateQuestionAsync(Question question)
-        {
-            _context.Entry(question).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var exists = await _context.Questions.AnyAsync(e => e.Id == question.Id);
-                if (!exists)
-                {
-                    return false;
-                }
-
-                throw;
-            }
-        }
-
-        public async Task<bool> DeleteQuestionAsync(int id)
-        {
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
-            {
-                return false;
-            }
-
-            _context.Questions.Remove(question);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
         private static List<string> ValidateQuestionDto(QuestionDTO questionDto)
         {
             var errors = new List<string>();

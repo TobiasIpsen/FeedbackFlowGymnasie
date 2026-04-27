@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
-using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Interface;
 
@@ -45,31 +43,7 @@ namespace feedbackFlowAPI.Controllers
             return question;
         }
 
-        // PUT: api/Questions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(int id, Question question)
-        {
-            if (id != question.Id)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                var wasUpdated = await _questionService.UpdateQuestionAsync(question);
-                if (!wasUpdated)
-                {
-                    return NotFound();
-                }
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-
-            return NoContent();
-        }
+    
 
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -98,19 +72,6 @@ namespace feedbackFlowAPI.Controllers
             }
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
-        }
-
-        // DELETE: api/Questions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuestion(int id)
-        {
-            var wasDeleted = await _questionService.DeleteQuestionAsync(id);
-            if (!wasDeleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
         }
     }
 }

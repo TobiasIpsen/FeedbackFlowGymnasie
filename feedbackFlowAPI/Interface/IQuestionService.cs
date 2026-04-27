@@ -8,7 +8,5 @@ namespace feedbackFlowAPI.Interface
         Task<List<Question>> GetQuestionsAsync();
         Task<Question?> GetQuestionByIdAsync(int id);
         Task<(Question? Question, List<string> Errors)> CreateQuestionAsync(QuestionDTO questionDto);
-        Task<bool> UpdateQuestionAsync(Question question);
-        Task<bool> DeleteQuestionAsync(int id);
     }
 }
