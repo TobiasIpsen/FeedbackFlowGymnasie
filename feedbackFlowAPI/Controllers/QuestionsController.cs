@@ -73,5 +73,18 @@ namespace feedbackFlowAPI.Controllers
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
         }
+
+        // DELETE: api/Questions/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var wasDeleted = await _questionService.DeleteQuestionAsync(id);
+            if (!wasDeleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }
