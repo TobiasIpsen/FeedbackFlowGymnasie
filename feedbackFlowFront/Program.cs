@@ -17,6 +17,7 @@ namespace feedbackFlowFront
             builder.Services.AddScoped<AssignmentService>();
             builder.Services.AddScoped<GradingService>();
             builder.Services.AddScoped<SelfAssessmentService>();
+            builder.Services.AddScoped<QuestionService>();
 
             var app = builder.Build();
 
