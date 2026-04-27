@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.Services.Interfaces;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -15,10 +17,12 @@ namespace feedbackFlowAPI.Controllers
     public class QuestionsController : ControllerBase
     {
         private readonly FbfDbContext _context;
+        private readonly IQuestionService _questionService;
 
-        public QuestionsController(FbfDbContext context)
+        public QuestionsController(FbfDbContext context, IQuestionService questionService)
         {
             _context = context;
+            _questionService = questionService;
         }
 
         // GET: api/Questions
@@ -26,6 +30,14 @@ namespace feedbackFlowAPI.Controllers
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
             return await _context.Questions.ToListAsync();
+        }
+
+        // GET: api/Questions/filter
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<QuestionDTO>>> FilterQuestions([FromQuery] QuestionFilterDTO filter)
+        {
+            var questions = await _questionService.FilterQuestions(filter);
+            return Ok(questions);
         }
 
         // GET: api/Questions/5
