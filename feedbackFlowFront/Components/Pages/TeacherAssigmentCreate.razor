@@ -1,13 +1,14 @@
 ﻿@page "/teacher/sets/new"
+@rendermode InteractiveServer
 @inject QuestionService QuestionService
 @inject QuestionSetService QuestionSetService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Opret Opgavesaet</PageTitle>
+<PageTitle>Opret Opgavesæt</PageTitle>
 
 <section class="glass-card reveal-up teacher-create-wrap">
-	<h1>Opret opgavesaet</h1>
-	<p class="lead-text">Vaelg hvilke spoergsmaal der skal indgaa i saettet, og afslut med Annuller eller Opret.</p>
+	<h1>Opret opgavesæt</h1>
+	<p class="lead-text">Vælg hvilke spørgsmål der skal indgå i sættet, og afslut med Annuller eller Opret.</p>
 
 	@if (!string.IsNullOrWhiteSpace(successMessage))
 	{
@@ -21,12 +22,12 @@
 
 	<div class="form-grid">
 		<div class="field-block">
-			<label for="setName">Navn paa opgavesaet</label>
+			<label for="setName">Navn på opgavesæt</label>
 			<InputText id="setName" class="form-control" @bind-Value="setName" />
 		</div>
 
 		<fieldset class="toggle-card">
-			<legend>Eksamenssaet?</legend>
+			<legend>Eksamenssæt?</legend>
 			<label class="choice-row">
 				<InputRadioGroup @bind-Value="isExam">
 					<InputRadio Value="true" /> Ja
@@ -42,15 +43,15 @@
 	</div>
 
 	<fieldset class="toggle-card checkbox-wrap">
-		<legend>Vaelg spoergsmaal til saettet</legend>
+		<legend>Vælg spørgsmål til sættet</legend>
 
 		@if (isLoading)
 		{
-			<p>Henter spoergsmaal...</p>
+			<p>Henter spørgsmål...</p>
 		}
 		else if (questions.Count == 0)
 		{
-			<p>Der er ingen gemte spoergsmaal endnu. Opret et spoergsmaal foerst.</p>
+			<p>Der er ingen gemte spørgsmål endnu. Opret et spørgsmål først.</p>
 		}
 		else
 		{
@@ -66,7 +67,7 @@
 				}
 			</div>
 
-			<p class="selection-count">Valgt: @selectedQuestionIds.Count spoergsmaal</p>
+			<p class="selection-count">Valgt: @selectedQuestionIds.Count spørgsmål</p>
 		}
 	</fieldset>
 
@@ -113,7 +114,7 @@
 
 		if (selectedQuestionIds.Count == 0)
 		{
-			errorMessage = "Vaelg mindst et spoergsmaal til opgavesaettet.";
+			errorMessage = "Vælg mindst et spørgsmål til opgavesættet.";
 			return;
 		}
 
@@ -123,7 +124,7 @@
 			isDraft,
 			selectedQuestionIds.ToList());
 
-		successMessage = $"Opgavesaet oprettet (ID: {createdSet.Id}) med {createdSet.QuestionIds.Count} spoergsmaal.";
+		successMessage = $"Opgavesæt oprettet (ID: {createdSet.Id}) med {createdSet.QuestionIds.Count} spørgsmål.";
 		ResetForm();
 	}
 

@@ -1,4 +1,5 @@
 ﻿@page "/teacher/questions/new"
+@rendermode InteractiveServer
 @using feedbackFlowAPI.DTOs
 @using feedbackFlowAPI.Helpers
 @inject NavigationManager NavigationManager
@@ -8,12 +9,12 @@
 
 <section class="glass-card reveal-up teacher-create-wrap">
 	<h1>Opret spørgsmål</h1>
-	<p class="lead-text">Udgangspunktet er QuestionDTO med ekstra ja/nej-valg og afkrydsninger til laererens oprettelse.</p>
+	<p class="lead-text">Udgangspunktet er QuestionDTO med ekstra ja/nej-valg og afkrydsninger til lærerens oprettelse.</p>
 
 	@if (!string.IsNullOrWhiteSpace(successMessage))
 	{
 		<p class="form-success">@successMessage</p>
-		<a class="cta-link" href="/teacher/sets/new">Ga til opgavesaet</a>
+		<a class="cta-link" href="/teacher/sets/new">Gå til opgavesæt</a>
 	}
 
 	@if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -173,7 +174,7 @@
 
 		var createdQuestion = await QuestionService.CreateQuestionAsync(form);
 
-		successMessage = $"Spoergsmaalet er oprettet og gemt (ID: {createdQuestion.Id}).";
+		successMessage = $"Spørgsmålet er oprettet og gemt (ID: {createdQuestion.Id}).";
 		ResetForm();
 	}
 
