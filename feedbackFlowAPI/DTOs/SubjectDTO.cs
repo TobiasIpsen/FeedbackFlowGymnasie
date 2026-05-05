@@ -8,5 +8,6 @@ public partial class SubjectDTO
     /// <summary>
     /// trigonometri, vectors
     /// </summary>
+    public int Id { get; set; }
     public string Name { get; set; } = null!;
 }
