@@ -1,5 +1,55 @@
-﻿<h3>StudentView</h3>
+﻿@page "/student"
+@inject AssignmentService AssignmentService
+@inject SelfAssessmentService SelfAssessmentService
+@inject GradingService GradingService
+@inject UserService UserService
+
+<PageTitle>Student</PageTitle>
+
+<section class="glass-card reveal-up">
+	<h1>Elevoversigt</h1>
+	<p class="lead-text">Et enkelt dashboard med fokus paa progression og tydelig feedback for @studentName.</p>
+
+	<div class="page-grid">
+		<article class="info-card">
+			<h2>Mine opgaver</h2>
+			<p>@assignments.Count aktive opgaver med deadlines i naeste uge.</p>
+			@if (assignments.Count > 0)
+			{
+				<ul class="compact-list">
+					@foreach (var assignment in assignments)
+					{
+						<li>@assignment.Title - @assignment.DueDate:dd/MM (@assignment.Status)</li>
+					}
+				</ul>
+			}
+		</article>
+
+		<article class="info-card">
+			<h2>Selvvurdering</h2>
+			<p>@pendingSelfAssessments refleksioner klar til aflevering.</p>
+		</article>
+
+		<article class="info-card">
+			<h2>Feedback-status</h2>
+			<p>Seneste: @latestFeedback.AssignmentTitle (@latestFeedback.PublishedAt:dd/MM) - @latestFeedback.Status.</p>
+		</article>
+	</div>
+</section>
 
 @code {
+    private string studentName = "elev";
+    private int pendingSelfAssessments;
+    private List<AssignmentService.StudentAssignmentItem> assignments = new();
+    private GradingService.LatestFeedbackItem latestFeedback = new("Ingen data", DateTime.Today, "Ukendt");
+
+    protected override async Task OnInitializedAsync()
+    {
+        const int studentId = 1;
+        studentName = await UserService.GetStudentNameAsync(studentId);
+        assignments = await AssignmentService.GetStudentAssignmentsAsync(studentId);
+        pendingSelfAssessments = await SelfAssessmentService.GetPendingSelfAssessmentsAsync(studentId);
+        latestFeedback = await GradingService.GetLatestFeedbackForStudentAsync(studentId);
+    }
 
 }
