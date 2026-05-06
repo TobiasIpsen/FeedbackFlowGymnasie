@@ -6,6 +6,8 @@ namespace feedbackFlowAPI.DTOs;
 
 public partial class QuestionDTO
 {
+    public int Id { get; set; }
+
     public string ImgSrc { get; set; } = null!;
 
     public string Points { get; set; } = null!;
@@ -22,5 +24,9 @@ public partial class QuestionDTO
 
     public Education Education { get; set; }
 
+    public QuestionContext QuestionContext { get; set; }
+
     public StandardQuestion StandardQuestion { get; set; }
+
+    public NewOldSystem NewOldSystem { get; set; }
 }
