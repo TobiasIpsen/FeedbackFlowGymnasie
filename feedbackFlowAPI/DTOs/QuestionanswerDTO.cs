@@ -24,5 +24,5 @@ public partial class QuestionAnswerDTO
 
     public QuestionSet? QuestionSet { get; set; }
 
-    public ICollection<ContentType> ContentTypes { get; set; } = new List<ContentType>();
+    public ICollection<ContentTypeDTO> ContentTypes { get; set; } = new List<ContentTypeDTO>();
 }
