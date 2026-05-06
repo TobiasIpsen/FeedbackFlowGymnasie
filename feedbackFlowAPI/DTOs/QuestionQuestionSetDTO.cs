@@ -7,5 +7,7 @@
         public int QuestionId { get; set; }
 
         public int QuestionSetId { get; set; }
+
+        public int Order { get; set; }
     }
 }

@@ -1,0 +1,124 @@
+.teacher-create-wrap {
+    max-width: 980px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.95rem;
+    margin-top: 1rem;
+}
+
+.field-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.field-block label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2a4b61;
+}
+
+.toggle-card {
+    margin: 0;
+    border: 1px solid rgba(15, 46, 68, 0.16);
+    border-radius: 0.9rem;
+    padding: 0.85rem 0.95rem;
+    background: #ffffff;
+}
+
+.toggle-card legend {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0 0.2rem;
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #36586e;
+    font-weight: 800;
+}
+
+.choice-row {
+    display: block;
+    margin-top: 0.55rem;
+}
+
+.choice-row ::deep .form-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 1rem;
+}
+
+.checkbox-wrap {
+    margin-top: 1rem;
+}
+
+.check-row {
+    margin-top: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #2d4d62;
+}
+
+.in-grid-check {
+    align-self: center;
+}
+
+.question-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+}
+
+.question-item {
+    border-bottom: 1px solid rgba(15, 46, 68, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.selection-count {
+    margin-top: 0.9rem;
+    margin-bottom: 0;
+    color: #2f4e64;
+    font-weight: 700;
+}
+
+.action-row {
+    margin-top: 1.1rem;
+    display: flex;
+    gap: 0.65rem;
+    justify-content: flex-end;
+}
+
+.form-success,
+.form-error {
+    margin-top: 0.7rem;
+    margin-bottom: 0;
+    border-radius: 0.7rem;
+    padding: 0.55rem 0.8rem;
+    font-weight: 600;
+}
+
+.form-success {
+    background: rgba(38, 176, 80, 0.14);
+    color: #176132;
+}
+
+.form-error {
+    background: rgba(229, 0, 0, 0.12);
+    color: #8d1313;
+}
+
+@media (max-width: 700px) {
+    .action-row {
+        justify-content: stretch;
+    }
+
+    .action-row .btn {
+        flex: 1;
+    }
+}

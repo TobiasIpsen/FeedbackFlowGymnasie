@@ -3,11 +3,17 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<section class="glass-card reveal-up">
+    <h1>Counter</h1>
+    <p class="lead-text">Lille testmodul til at validere interaktiv server-rendering.</p>
 
-<p role="status">Current count: @currentCount</p>
+    <div class="metric-tile">
+        <p class="metric-label">Current count</p>
+        <p class="metric-value" role="status">@currentCount</p>
+    </div>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    <button class="btn-brand" @onclick="IncrementCount">Increment</button>
+</section>
 
 @code {
     private int currentCount = 0;
