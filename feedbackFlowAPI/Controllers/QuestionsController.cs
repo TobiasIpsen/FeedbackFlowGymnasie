@@ -26,7 +26,7 @@ namespace feedbackFlowAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("upload")]
         public async Task<IActionResult> CreateQuestion([FromForm] QuestionDTO dto)
         {
             string fileUrl = null;
