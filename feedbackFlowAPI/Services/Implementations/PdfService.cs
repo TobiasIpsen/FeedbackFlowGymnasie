@@ -7,8 +7,8 @@ using QuestPDF.Infrastructure;
 namespace feedbackFlowAPI.Services.Implementations { 
     public class PdfService: IDocument
     {
-    public string Title { get; set; }
-    public List<string> ImageUrls { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public List<string> ImageUrls { get; set; } = new List<string>();
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
