@@ -31,9 +31,12 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .HasColumnType("class_level")
                 .HasColumnName("class_level");
 
+            entity.HasOne(d => d.Teacher).WithMany(p => p.TeacherClasses)
+                .HasForeignKey(d => d.TeacherId)
+                .HasConstraintName("fk_teacher_to_classes");
+
             entity.HasOne(d => d.Course).WithMany(p => p.Classes)
                 .HasForeignKey(d => d.CourseId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_courses_to_classes");
         }
     }

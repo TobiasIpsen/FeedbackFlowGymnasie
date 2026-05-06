@@ -26,5 +26,7 @@ public class User
 
     public ICollection<StudentResult>? TeacherStudentResults { get; set; } = new List<StudentResult>();
 
-    public ICollection<Class>? Classes { get; set; } = new List<Class>();
+    public ICollection<Class> TeacherClasses { get; set; } = new List<Class>();
+
+    public ICollection<Class> StudentClasses { get; set; } = new List<Class>();
 }

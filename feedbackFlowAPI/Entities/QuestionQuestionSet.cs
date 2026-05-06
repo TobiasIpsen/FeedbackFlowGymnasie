@@ -13,5 +13,7 @@
         public Question Question { get; set; } = null!;
         
         public QuestionSet QuestionSet { get; set; } = null!;
+
+        public int Order { get; set; }
     }
 }

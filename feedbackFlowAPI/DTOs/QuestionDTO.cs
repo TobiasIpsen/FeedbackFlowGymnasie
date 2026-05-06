@@ -7,6 +7,9 @@ namespace feedbackFlowAPI.DTOs
     public class QuestionDTO
     {
         [Required]
+        public int? UserId { get; set; }
+      
+        [Required]
         public string ImgSrc { get; set; } = null!;
 
         [Required]
@@ -39,8 +42,5 @@ namespace feedbackFlowAPI.DTOs
         public NewOldSystem? NewOldSystem { get; set; }
 
         public int? CourseId { get; set; }
-
-        [Required]
-        public int? UserId { get; set; }
     }
 }

@@ -1,12 +1,16 @@
-﻿using System;
+using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.Entities;
+using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.Helpers.ControllerHelpers;
+using feedbackFlowAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using feedbackFlowAPI.Interface;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using feedbackFlowAPI.Entities;
-using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.Interface;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -21,7 +25,6 @@ namespace feedbackFlowAPI.Controllers
             _questionService = questionService;
         }
 
-        // GET: api/Questions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
@@ -85,6 +88,12 @@ namespace feedbackFlowAPI.Controllers
             }
 
             return NoContent();
+        }
+        
+        [HttpGet]
+        public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
+        {
+            return await _questionService.GetQuestions(getQuestionRequest);
         }
     }
 }
