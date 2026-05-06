@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace feedbackFlowAPI.DTOs.StudentResults;
 
@@ -9,7 +10,7 @@ public class StudentResultDTO
 
     public string? TeacherFeedback { get; set; }
 
-    public string? StudentSelfAssessmentPoints { get; set; }
+    public int? StudentSelfAssessmentPoints { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
 
