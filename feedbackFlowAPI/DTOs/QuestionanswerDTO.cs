@@ -22,7 +22,7 @@ public partial class QuestionAnswerDTO
 
     public Question Question { get; set; } = null!;
 
-    public QuestionSet? QuestionSet { get; set; } = null!;
+    public QuestionSet? QuestionSet { get; set; }
 
     public ICollection<ContentType> ContentTypes { get; set; } = new List<ContentType>();
 }
