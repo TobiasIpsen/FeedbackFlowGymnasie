@@ -1,5 +1,4 @@
 using feedbackFlowFront.Components;
-using feedbackFlowFront.Service;
 
 namespace feedbackFlowFront
 {
@@ -12,15 +11,6 @@ namespace feedbackFlowFront
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
-
-            builder.Services.AddScoped<UserService>();
-            builder.Services.AddScoped<AssignmentService>();
-            builder.Services.AddScoped<GradingService>();
-            builder.Services.AddScoped<SelfAssessmentService>();
-            builder.Services.AddScoped<QuestionService>();
-            builder.Services.AddScoped<QuestionSetService>();
-            builder.Services.AddSingleton<QuestionService>();
-
 
             var app = builder.Build();
 

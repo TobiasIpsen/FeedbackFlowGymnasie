@@ -3,41 +3,38 @@
 
 <PageTitle>Weather</PageTitle>
 
-<section class="glass-card reveal-up">
-    <h1>Weather</h1>
-    <p class="lead-text">Streaming-demo med tabelvisning i det nye UI.</p>
+<h1>Weather</h1>
 
-    @if (forecasts == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <div class="table-wrap">
-            <table class="table table-modern">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                        <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var forecast in forecasts)
-                    {
-                        <tr>
-                            <td>@forecast.Date.ToShortDateString()</td>
-                            <td>@forecast.TemperatureC</td>
-                            <td>@forecast.TemperatureF</td>
-                            <td>@forecast.Summary</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-</section>
+<p>This component demonstrates showing data.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
     private WeatherForecast[]? forecasts;

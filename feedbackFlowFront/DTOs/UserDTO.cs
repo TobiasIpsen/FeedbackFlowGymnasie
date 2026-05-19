@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 namespace feedbackFlowAPI.DTOs;
@@ -12,4 +13,6 @@ public partial class UserDTO
     public string Lastname { get; set; } = null!;
 
     public string Email { get; set; } = null!;
+
+
 }

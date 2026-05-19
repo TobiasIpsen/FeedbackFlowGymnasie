@@ -1,20 +1,16 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="app-shell">
-    <aside class="sidebar">
+<div class="page">
+    <div class="sidebar">
         <NavMenu />
-    </aside>
+    </div>
 
-    <main class="main-panel">
-        <header class="top-row">
-            <div class="top-row-meta">
-                <span class="eyebrow">FeedbackFlow Gymnasie</span>
-                <p class="top-row-title">Oversigt over opgaver, teams og feedback</p>
-            </div>
-            <a class="top-link" href="https://learn.microsoft.com/aspnet/core/" target="_blank" rel="noopener noreferrer">Blazor Docs</a>
-        </header>
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
 
-        <article class="content">
+        <article class="content px-4">
             @Body
         </article>
     </main>
