@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   db:
@@ -11,8 +9,8 @@ services:
     networks:
       - backend
     environment:
-      POSTGRES_USER: [SET USERNAME HERE]
-      POSTGRES_PASSWORD: [SET PASSWORD HERE]
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./data:/var/lib/postgresql
     ports:
@@ -33,8 +31,25 @@ services:
     networks:
       - backend
     environment:
-      PGADMIN_DEFAULT_EMAIL: [SET EMAIL HERE]
-      PGADMIN_DEFAULT_PASSWORD: [SET PASSWORD HERE]
+      PGADMIN_DEFAULT_EMAIL: ${PG_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWORD}
+
+  dotnet:
+    container_name: aspNet
+    build:
+      context: .
+      dockerfile: ./Dockerfile.HotReload
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://*:443;http://*:80
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - .:/app
+    command: dotnet watch run --no-launch-profile
+
 
 networks:
   backend:
