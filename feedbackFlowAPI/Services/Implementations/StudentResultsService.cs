@@ -13,11 +13,13 @@ namespace feedbackFlowAPI.Services.Implementations
     {
         private FbfDbContext _context;
         private readonly IStudentResultMapper _mapper;
+        private ILogger<Program> _logger;
 
-        public StudentResultsService(FbfDbContext context, IStudentResultMapper mapper)
+        public StudentResultsService(ILogger<Program> logger, FbfDbContext context, IStudentResultMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<TeacherFeedbackDTO> SaveTeacherFeedbackAsync(int studentId, int questionSetId, int questionId, TeacherFeedbackDTO dto)
@@ -31,6 +33,7 @@ namespace feedbackFlowAPI.Services.Implementations
 
             if (alreadyExists)
             {
+                _logger.LogInformation("Teacher feedback already exists");
                 throw new InvalidOperationException("Teacher feedback already exists");
             }
 
@@ -43,6 +46,8 @@ namespace feedbackFlowAPI.Services.Implementations
 
             EntityEntry<StudentResult> result = await _context.StudentResults.AddAsync(entity);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Teacher feedback created");
 
             return _mapper.ToDTO(result.Entity);
         }

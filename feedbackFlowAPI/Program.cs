@@ -10,6 +10,12 @@ using feedbackFlowAPI.Services.Interfaces;
 using feedbackFlowAPI.Services.Implementations;
 using feedbackFlowAPI.Mappers.Implementations;
 using feedbackFlowAPI.Mappers.Interface;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using Npgsql;
+using OpenTelemetry;
 
 namespace feedbackFlowAPI
 {
@@ -19,13 +25,40 @@ namespace feedbackFlowAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            const string serviceName = "feeback-flow-api";
+
+            builder.Logging.AddOpenTelemetry(options =>
+            {
+                options
+                    .SetResourceBuilder(
+                        ResourceBuilder.CreateDefault().AddService(serviceName))
+                    .AddConsoleExporter()
+                    .AddOtlpExporter();
+                options.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+            });
+            builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService(serviceName))
+                .WithTracing(tracing => tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddConsoleExporter()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddNpgsql())
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddConsoleExporter()
+                    .AddHttpClientInstrumentation()
+                    .AddNpgsqlInstrumentation())
+                .UseOtlpExporter();
+
             // Add services to the container.
             builder.Services.AddSingleton<IStudentResultMapper, StudentResultMapper>();
             builder.Services.AddScoped<IStudentResultsService, StudentResultsService>();
             builder.Services.AddSingleton<IClassMapper, ClassMapper>();
             builder.Services.AddScoped<IClassService, ClassService>();
             builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
-            builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
+            //builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
             builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
 
             builder.Services
