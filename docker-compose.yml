@@ -14,7 +14,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql
     ports:
-      - "5434:5432"
+      - 5434:5432
 
   pgadmin:
     image: dpage/pgadmin4:9.13
@@ -34,25 +34,144 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PG_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWORD}
 
+  # dotnet-hotreload:
+  #   container_name: aspNet
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile.HotReload
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=https://*:443;http://*:80
+  #     - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+  #     - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+  #   ports:
+  #     - 5000:80
+  #     - 5001:443
+  #   networks:
+  #     - backend
+  #     - otel
+  #   volumes:
+  #     - ~/.aspnet/https:/https:ro
+  #     - .:/app
+  #   command: dotnet watch run --no-launch-profile
+  
   dotnet:
     container_name: aspNet
-    build:
-      context: .
-      dockerfile: ./Dockerfile.HotReload
+    image: feedbackflowgymnasie-dotnet
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://*:443;http://*:80
+      - ASPNETCORE_URLS=http://*:80
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=feedbackFlow;Username=${POSTGRES_USERNAME};Password=${POSTGRES_PASSWORD}
     ports:
-      - "5000:80"
-      - "5001:443"
+      - 5000:80
+    networks:
+      - backend
+      - otel
     volumes:
       - ~/.aspnet/https:/https:ro
-      - .:/app
-    command: dotnet watch run --no-launch-profile
 
+  grafana:
+    image: grafana/grafana:11.6
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - otel
+    volumes:
+      - grafana_storage:/var/lib/grafana
+      - ./grafana-datasources:/etc/grafana/provisioning
+
+  prometheus:
+    image: prom/prometheus:v3
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - otel
+    ports:
+      - 4999:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-remote-write-receiver
+
+  loki:
+    image: grafana/loki:main-1983d05
+    ports:
+      - 3100:3100
+    volumes:
+      - loki_data:/loki
+    networks:
+      - otel
+
+  alloy:
+    image: grafana/alloy:v1.17.0
+    restart: unless-stopped
+    ports:
+      - 12345:12345
+      - 4319:4317
+    networks:
+      - otel
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --server.http.listen-addr=0.0.0.0:12345
+
+  tempo:
+    image: grafana/tempo:2.10.7
+    command: ["-config.file=/etc/tempo.yml"]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yml
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"
+      - "4318:4318"
+      - "4317:4317"
+    networks:
+      - otel
+
+  node-exporter:
+    image: prom/node-exporter:v1
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    networks:
+      - otel
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.54.1
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    networks:
+      - otel
+
+volumes:
+  grafana_storage:
+  prometheus_data:
+  loki_data:
+  tempo_data:
 
 networks:
   backend:
-    name: backend
-    internal: false # in production, it should be true if you don't want to expose this network to the outside world
-    driver: bridge
+    internal: false
+  otel:
+    internal: false

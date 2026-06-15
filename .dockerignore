@@ -20,7 +20,14 @@ secrets.yaml
 dist/
 build/
 out/
-bin/
+**bin/
+# **obj/
+**/*.user
+**/*.suo
+**/*.cache
+**/.git/
+**/.gitignore
+**/.vs/
 
 # Version control
 .git/

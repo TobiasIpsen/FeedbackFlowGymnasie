@@ -1,9 +1,6 @@
 ﻿
 using feedbackFlowAPI.Helpers;
 using Microsoft.EntityFrameworkCore;
-using feedbackFlowAPI.Controllers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using feedbackFlowAPI.Services.Interfaces;
@@ -15,7 +12,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Npgsql;
-using OpenTelemetry;
 
 namespace feedbackFlowAPI
 {
@@ -31,9 +27,9 @@ namespace feedbackFlowAPI
             {
                 options
                     .SetResourceBuilder(
-                        ResourceBuilder.CreateDefault().AddService(serviceName))
-                    .AddConsoleExporter()
-                    .AddOtlpExporter();
+                        ResourceBuilder.CreateDefault().AddService(serviceName));
+                options.AddOtlpExporter();
+                options.ParseStateValues = true;
                 options.IncludeScopes = true;
                 options.IncludeFormattedMessage = true;
             });
@@ -41,16 +37,17 @@ namespace feedbackFlowAPI
                 .ConfigureResource(resource => resource.AddService(serviceName))
                 .WithTracing(tracing => tracing
                     .AddAspNetCoreInstrumentation()
-                    .AddConsoleExporter()
+                    //.AddConsoleExporter()
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
-                    .AddNpgsql())
+                    .AddNpgsql()
+                    .AddOtlpExporter())
                 .WithMetrics(metrics => metrics
                     .AddAspNetCoreInstrumentation()
-                    .AddConsoleExporter()
+                    //.AddConsoleExporter()
                     .AddHttpClientInstrumentation()
-                    .AddNpgsqlInstrumentation())
-                .UseOtlpExporter();
+                    .AddNpgsqlInstrumentation()
+                    .AddOtlpExporter());
 
             // Add services to the container.
             builder.Services.AddSingleton<IStudentResultMapper, StudentResultMapper>();
