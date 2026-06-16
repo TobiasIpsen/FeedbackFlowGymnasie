@@ -769,7 +769,3 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,git,aspnetcore,macos,windows,node,react
-/data/18/docker
-/feedbackFlowAPI/Migrations/20260408122138_First.cs
-/feedbackFlowAPI/Migrations/20260408122138_First.Designer.cs
-/feedbackFlowFront/DTOs

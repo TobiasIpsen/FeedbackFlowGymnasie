@@ -42,27 +42,5 @@ namespace feedbackFlowAPI.Controllers
                 return Conflict(ex.Message);
             }
         }
-
-        [HttpPost("save-and-download")]
-        public async Task<IActionResult> SaveAndDownloadSet([FromBody] CreateQuestionSetRequest request)
-        {
-            try
-            {
-               
-                byte[] pdfFile = await _service.CreateQuestionSetAndGeneratePdf(
-                    request.QuestionIds,
-                    request.SubjectId,
-                    request.Set
-                );
-
-                
-                return File(pdfFile, "application/pdf", $"{request.Set.Name}.pdf");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
     }
 }
