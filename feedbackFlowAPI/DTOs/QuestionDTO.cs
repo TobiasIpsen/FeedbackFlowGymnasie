@@ -5,7 +5,8 @@ using feedbackFlowAPI.Helpers;
 namespace feedbackFlowAPI.DTOs
 {
     public class QuestionDTO
-    {
+    { 
+        
         public int Id { get; set; }
 
         [Required]
