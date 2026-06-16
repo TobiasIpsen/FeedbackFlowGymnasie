@@ -22,35 +22,12 @@ namespace feedbackFlowAPI.Controllers
 
         public QuestionsController(IQuestionService service, IStorageService storageService)
         {
-            _service = service;
+      
             _storageService = storageService;
         }
 
 
         [HttpPost("upload")]
-        public async Task<IActionResult> CreateQuestion([FromForm] QuestionDTO dto)
-        {
-            string fileUrl = null;
-
-           
-            if (dto.File != null)
-            {
-                
-                fileUrl = await _storageService.UploadFileAsync(dto.File, "questions");
-            }
-
-            
-            var newQuestion = new Question
-            {
-                ImgSrc = fileUrl, 
-                Points = dto.Points,
-
-            };
-
-            return CreatedAtAction(nameof(GetQuestion), new { id = newQuestion.Id }, newQuestion);
-        }
-        // GET: api/Questions
-
         [HttpGet]
         public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
         {

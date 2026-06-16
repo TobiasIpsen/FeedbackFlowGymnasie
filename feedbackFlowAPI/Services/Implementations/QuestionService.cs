@@ -5,6 +5,7 @@ using feedbackFlowAPI.Helpers.ControllerHelpers;
 using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 
 namespace feedbackFlowAPI.Services.Implementations
 {
@@ -12,11 +13,13 @@ namespace feedbackFlowAPI.Services.Implementations
     {
         private FbfDbContext _context;
         private IQuestionMapper _mapper;
+        private readonly IQuestionSetMapper _QSMapper;
 
-        public QuestionService(FbfDbContext context, IQuestionMapper mapper)
+        public QuestionService(FbfDbContext context, IQuestionMapper mapper, IQuestionSetMapper qsMapper)
         {
             _context = context;
             _mapper = mapper;
+            _QSMapper = qsMapper;
         }
 
         public async Task<GetQuestionResponse> GetQuestions(GetQuestionRequest getQuestionRequest)
@@ -38,5 +41,30 @@ namespace feedbackFlowAPI.Services.Implementations
 
             return GetQuestionResponse;
         }
+
+        public async Task<byte[]> CreateQuestionSetAndGeneratePdf(List<int> QuestionIds, int SubjectId, QuestionSetDTO Set)
+        {
+            // 1. Gem forholdet i databasen (SQL)
+            QuestionSet entity = _QSMapper.ToEntity(QuestionIds, SubjectId, Set);
+            await _context.QuestionSets.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            // 2. Hent billed-URL'erne fra de valgte spørgsmål
+            var imageUrls = await _context.Questions
+                .Where(q => QuestionIds.Contains(q.Id))
+                .Select(q => q.ImgSrc)
+                .ToListAsync();
+
+            // 3. Brug din PdfService (som implementerer IDocument)
+            var pdfDoc = new PdfService
+            {
+                Title = Set.Name,
+                ImageUrls = imageUrls
+            };
+
+            // 4. Generer og returner bytes
+            return pdfDoc.GeneratePdf();
+        }
+
     }
 }

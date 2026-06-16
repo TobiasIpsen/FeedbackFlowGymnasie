@@ -772,3 +772,4 @@ FodyWeavers.xsd
 /data/18/docker
 /feedbackFlowAPI/Migrations/20260408122138_First.cs
 /feedbackFlowAPI/Migrations/20260408122138_First.Designer.cs
+/feedbackFlowFront/DTOs
