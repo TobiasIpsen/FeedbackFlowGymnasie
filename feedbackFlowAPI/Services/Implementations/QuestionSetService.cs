@@ -13,17 +13,17 @@ namespace feedbackFlowAPI.Services.Implementations
     public class QuestionSetService : IQuestionSetService
     {
         private FbfDbContext _context;
-        private readonly IQuestionSetMapper _mapper;
+        private readonly IQuestionSetMapper _QSMapper;
 
-        public QuestionSetService(FbfDbContext context, IQuestionSetMapper mapper)
+        public QuestionSetService(FbfDbContext context, IQuestionMapper mapper, IQuestionSetMapper qsMapper)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context;           
+            _QSMapper = qsMapper;
         }
 
         public async Task<QuestionSetDTO> CreateQuestionSet(List<int> QuestionIds, int SubjectId, QuestionSetDTO Set)
         {
-            QuestionSet entity = _mapper.ToEntity(QuestionIds, SubjectId, Set);
+            QuestionSet entity = _QSMapper.ToEntity(QuestionIds, SubjectId, Set);
             EntityEntry<QuestionSet> result = await _context.QuestionSets.AddAsync(entity);
 
             try
@@ -35,7 +35,7 @@ namespace feedbackFlowAPI.Services.Implementations
                 throw new InvalidOperationException(ex.Message);
             }
 
-            return _mapper.ToDTO(result.Entity);
+            return _QSMapper.ToDTO(result.Entity);
         }
         // lavet denne så det er muligt at generere et pdf dokument med spørgsmålene i et question set
         public async Task<byte[]> CreateQuestionSetAndGeneratePdf(List<int> QuestionIds, int SubjectId, QuestionSetDTO Set)

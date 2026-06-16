@@ -18,20 +18,17 @@ namespace feedbackFlowAPI.Controllers
     public class QuestionsController : ControllerBase
     {
         private readonly IQuestionService _service;
-        private readonly IStorageService _storageService;
 
-        public QuestionsController(IQuestionService service, IStorageService storageService)
+        public QuestionsController(IQuestionService service)
         {
-      
-            _storageService = storageService;
+            _service = service;
         }
 
-
-        [HttpPost("upload")]
         [HttpGet]
         public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
         {
             return await _service.GetQuestions(getQuestionRequest);
         }
     }
-}
+}    
+
