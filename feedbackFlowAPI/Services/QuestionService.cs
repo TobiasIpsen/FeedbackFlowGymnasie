@@ -47,7 +47,7 @@ namespace feedbackFlowAPI.Services
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
 
-            return (question, errors);
+            return (question, new List<string>());
         }
 
         public async Task<bool> DeleteQuestionAsync(int id)
@@ -61,7 +61,8 @@ namespace feedbackFlowAPI.Services
             _context.Questions.Remove(question);
             await _context.SaveChangesAsync();
 
-            return (question, new List<string>());
+            return true;
         }
+
     }
 }

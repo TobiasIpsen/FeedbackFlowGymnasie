@@ -1,11 +1,9 @@
-using feedbackFlowAPI.DTOs;
+﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Helpers.ControllerHelpers;
-using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using feedbackFlowAPI.Interface;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,11 +16,13 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class QuestionsController : ControllerBase
     {
-        private readonly IQuestionService _questionService;
+        private readonly feedbackFlowAPI.Interface.IQuestionService _questionService;
+        private readonly feedbackFlowAPI.Services.Interfaces.IQuestionService _questionQueryService;
 
-        public QuestionsController(IQuestionService questionService)
+        public QuestionsController(feedbackFlowAPI.Interface.IQuestionService questionService, feedbackFlowAPI.Services.Interfaces.IQuestionService questionQueryService)
         {
             _questionService = questionService;
+            _questionQueryService = questionQueryService;
         }
 
         [HttpGet]
@@ -93,7 +93,7 @@ namespace feedbackFlowAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
         {
-            return await _questionService.GetQuestions(getQuestionRequest);
+            return await _questionQueryService.GetQuestions(getQuestionRequest);
         }
     }
 }

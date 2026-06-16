@@ -29,7 +29,8 @@ namespace feedbackFlowAPI
             builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
             builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
             builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
-            builder.Services.AddScoped<IQuestionService, QuestionService>();
+            builder.Services.AddScoped<feedbackFlowAPI.Interface.IQuestionService, feedbackFlowAPI.Services.QuestionService>();
+            builder.Services.AddScoped<feedbackFlowAPI.Services.Interfaces.IQuestionService, feedbackFlowAPI.Services.Implementations.QuestionService>();
 
             builder.Services
                 .AddControllers()
@@ -57,8 +58,6 @@ namespace feedbackFlowAPI
                         o.MapEnum<NewOldSystem>("new_old_system");
                     });
             });
-
-                    builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();

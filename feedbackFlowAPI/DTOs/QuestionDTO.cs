@@ -6,6 +6,8 @@ namespace feedbackFlowAPI.DTOs
 {
     public class QuestionDTO
     {
+        public int Id { get; set; }
+
         [Required]
         [Range(1, int.MaxValue)]
         public int? UserId { get; set; }
