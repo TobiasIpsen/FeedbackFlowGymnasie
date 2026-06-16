@@ -14,6 +14,7 @@ namespace feedbackFlowAPI.Mappers.Implementations
                 Id = entity.Id,
                 ImgSrc = entity.ImgSrc,
                 Points = entity.Points,
+                DeletedAt = entity.DeletedAt,
                 ExamType = entity.ExamType,
                 ClassLevel = entity.ClassLevel,
                 QuestionDifficulty = entity.QuestionDifficulty,
@@ -21,7 +22,9 @@ namespace feedbackFlowAPI.Mappers.Implementations
                 Education = entity.Education,
                 QuestionContext = entity.QuestionContext,
                 StandardQuestion = entity.StandardQuestion,
-                NewOldSystem = entity.NewOldSystem                
+                NewOldSystem = entity.NewOldSystem,
+                CourseId = entity.CourseId,
+                UserId = entity.UserId
             };
         }
     }
