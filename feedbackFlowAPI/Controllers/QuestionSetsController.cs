@@ -18,11 +18,11 @@ namespace feedbackFlowAPI.Controllers
     public class QuestionSetsController : ControllerBase
     {
 
-        private readonly IQuestionSetService _service;
+        private readonly IQuestionSetService _setservice;
 
         public QuestionSetsController(IQuestionSetService service)
         {
-            _service = service;
+            _setservice = service;
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace feedbackFlowAPI.Controllers
         {
             try
             {
-                QuestionSetDTO createdSet = await _service.CreateQuestionSet(request.QuestionIds, request.SubjectId, request.Set);
+                QuestionSetDTO createdSet = await _setservice.CreateQuestionSet(request.QuestionIds, request.SubjectId, request.Set);
                 return Created(Request.Path.Value ?? string.Empty, createdSet);
             }
             catch (InvalidOperationException ex)
@@ -49,7 +49,7 @@ namespace feedbackFlowAPI.Controllers
             try
             {
                
-                byte[] pdfFile = await _service.CreateQuestionSetAndGeneratePdf(
+                byte[] pdfFile = await _setservice.CreateQuestionSetAndGeneratePdf(
                     request.QuestionIds,
                     request.SubjectId,
                     request.Set

@@ -16,13 +16,11 @@ namespace feedbackFlowAPI.Helpers.Configuration
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
             entity.Property(e => e.TeacherPoint)
-                .HasColumnType("character varying")
                 .HasColumnName("teacher_point");
             entity.Property(e => e.TeacherFeedback)
                 .HasColumnType("character varying")
                 .HasColumnName("teacher_feedback");
             entity.Property(e => e.StudentSelfAssessmentPoints)
-                .HasColumnType("character varying")
                 .HasColumnName("student_self_assessment_points");
             entity.Property(e => e.CreatedAt)
                 .HasColumnName("created_at")

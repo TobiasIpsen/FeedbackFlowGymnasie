@@ -3,13 +3,7 @@ using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Helpers.ControllerHelpers;
 using feedbackFlowAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace feedbackFlowAPI.Controllers
 {
@@ -17,18 +11,49 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class QuestionsController : ControllerBase
     {
-        private readonly IQuestionService _service;
+        private readonly IQuestionService _questionService;
 
-        public QuestionsController(IQuestionService service)
+        public QuestionsController(IQuestionService questionService)
         {
-            _service = service;
+            _questionService = questionService;
         }
 
         [HttpGet]
         public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
         {
-            return await _service.GetQuestions(getQuestionRequest);
+            return await _questionService.GetQuestions(getQuestionRequest);
         }
-    }
-}    
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Question>> GetQuestion(int id)
+        {
+            var question = await _questionService.GetQuestionByIdAsync(id);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(question);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Question>> PostQuestion([FromBody] QuestionDTO questionDto)
+        {
+            if (questionDto == null)
+            {
+                return BadRequest(new { message = "Request body is required." });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            var question = await _questionService.CreateQuestionAsync(questionDto);
+
+            return CreatedAtAction(nameof(GetQuestion), new { id = question.Id }, question);
+        }
+
+    }
+}

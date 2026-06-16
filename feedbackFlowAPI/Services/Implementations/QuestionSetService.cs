@@ -15,9 +15,9 @@ namespace feedbackFlowAPI.Services.Implementations
         private FbfDbContext _context;
         private readonly IQuestionSetMapper _QSMapper;
         //test
-        public QuestionSetService(FbfDbContext context, IQuestionMapper mapper, IQuestionSetMapper qsMapper)
+        public QuestionSetService(FbfDbContext context, IQuestionSetMapper qsMapper)
         {
-            _context = context;           
+            _context = context;
             _QSMapper = qsMapper;
         }
 
