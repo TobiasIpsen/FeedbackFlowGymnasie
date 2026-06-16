@@ -14,6 +14,5 @@ namespace feedbackFlowAPI.Services.Interfaces
 
         Task<bool> UpdateQuestionAsync(int id, QuestionDTO questionDto);
 
-        Task<bool> DeleteQuestionAsync(int id);
     }
 }
