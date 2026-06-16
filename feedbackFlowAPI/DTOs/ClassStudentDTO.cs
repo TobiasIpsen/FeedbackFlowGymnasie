@@ -10,19 +10,3 @@ public class ClassStudentDTO
 
     public string Email { get; set; } = string.Empty;
 }
-
-public class StudentLookupDTO
-{
-    public int Id { get; set; }
-
-    public string FullName { get; set; } = string.Empty;
-
-    public string Email { get; set; } = string.Empty;
-
-    public bool IsInClass { get; set; }
-}
-
-public class ClassStudentMutationDTO
-{
-    public int StudentId { get; set; }
-}
