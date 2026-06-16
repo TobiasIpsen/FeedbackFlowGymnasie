@@ -1,5 +1,4 @@
 version: '3.9'
-
 services:
 
   db:
@@ -11,6 +10,7 @@ services:
     networks:
       - backend
     environment:
+      POSTGRES_DB: feedbackflow
       POSTGRES_USER: [SET USERNAME HERE]
       POSTGRES_PASSWORD: [SET PASSWORD HERE]
     volumes:

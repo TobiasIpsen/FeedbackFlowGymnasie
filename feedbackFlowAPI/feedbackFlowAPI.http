@@ -1,18 +1,23 @@
 @feedbackFlowAPI_HostAddress = http://localhost:5084
 
-GET {{feedbackFlowAPI_HostAddress}}/weatherforecast/
+GET {{feedbackFlowAPI_HostAddress}}/api/users
 Accept: application/json
 
 ###
 
-POST {{feedbackFlowAPI_HostAddress}}/api/users/
+POST {{feedbackFlowAPI_HostAddress}}/api/users
 Accept: application/json
 Content-Type: application/json
 
 {
-  "firstname": "bob",
-  "lastname": "bobbeson",
-  "email": "abc@def.com",
+  "firstname": "Mette",
+  "lastname": "Nielsen",
+  "email": "mette.nielsen@school.dk"
 }
+
+###
+
+GET {{feedbackFlowAPI_HostAddress}}/api/users
+Accept: application/json
 
 ###

@@ -2,7 +2,6 @@
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Helpers.ControllerHelpers;
-using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,14 +52,15 @@ namespace feedbackFlowAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
-            return await _context.Questions.ToListAsync();
+            var questions = await _questionService.GetQuestionsAsync();
+            return Ok(questions);
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Question>> GetQuestion(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
+            var question = await _questionService.GetQuestionByIdAsync(id);
 
             if (question == null)
             {
@@ -70,57 +70,32 @@ namespace feedbackFlowAPI.Controllers
             return question;
         }
 
-        // PUT: api/Questions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(int id, Question question)
-        {
-            if (id != question.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(question).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!QuestionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+    
 
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(Question question)
+        public async Task<ActionResult<Question>> PostQuestion(QuestionDTO questionDto)
         {
-            _context.Questions.Add(question);
-            try
+            if (questionDto == null)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest(new { message = "Request body is required." });
             }
-            catch (DbUpdateException)
+
+            if (!ModelState.IsValid)
             {
-                if (QuestionExists(question.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return ValidationProblem(ModelState);
+            }
+
+            var (question, errors) = await _questionService.CreateQuestionAsync(questionDto);
+            if (errors.Count > 0)
+            {
+                return BadRequest(new { errors });
+            }
+
+            if (question == null)
+            {
+                return BadRequest(new { message = "Unable to create question from provided values." });
             }
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
@@ -130,21 +105,19 @@ namespace feedbackFlowAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
+            var wasDeleted = await _questionService.DeleteQuestionAsync(id);
+            if (!wasDeleted)
             {
                 return NotFound();
             }
 
-            _context.Questions.Remove(question);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-        private bool QuestionExists(int id)
+        
+        [HttpGet]
+        public async Task<ActionResult<GetQuestionResponse>> GetQuestions([FromQuery] GetQuestionRequest getQuestionRequest)
         {
-            return _context.Questions.Any(e => e.Id == id);
+            return await _questionQueryService.GetQuestions(getQuestionRequest);
         }
     }
 }
