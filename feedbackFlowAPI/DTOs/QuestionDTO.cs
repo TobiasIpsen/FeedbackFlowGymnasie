@@ -7,6 +7,7 @@ namespace feedbackFlowAPI.DTOs
     public class QuestionDTO
     {
         [Required]
+        [Range(1, int.MaxValue)]
         public int? UserId { get; set; }
       
         [Required]
@@ -41,6 +42,7 @@ namespace feedbackFlowAPI.DTOs
         [Required]
         public NewOldSystem? NewOldSystem { get; set; }
 
+        [Range(1, int.MaxValue)]
         public int? CourseId { get; set; }
     }
 }

@@ -27,12 +27,6 @@ namespace feedbackFlowAPI.Services
 
         public async Task<(Question? Question, List<string> Errors)> CreateQuestionAsync(QuestionDTO questionDto)
         {
-            var errors = ValidateQuestionDto(questionDto);
-            if (errors.Count > 0)
-            {
-                return (null, errors);
-            }
-
             var question = new Question
             {
                 ImgSrc = questionDto.ImgSrc.Trim(),
@@ -67,74 +61,7 @@ namespace feedbackFlowAPI.Services
             _context.Questions.Remove(question);
             await _context.SaveChangesAsync();
 
-            return true;
-        }
-
-        private static List<string> ValidateQuestionDto(QuestionDTO questionDto)
-        {
-            var errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(questionDto.ImgSrc))
-            {
-                errors.Add("ImgSrc is required.");
-            }
-
-            if (string.IsNullOrWhiteSpace(questionDto.Points))
-            {
-                errors.Add("Points is required.");
-            }
-
-            if (!questionDto.ExamType.HasValue)
-            {
-                errors.Add("ExamType is required.");
-            }
-
-            if (!questionDto.ClassLevel.HasValue)
-            {
-                errors.Add("ClassLevel is required.");
-            }
-
-            if (!questionDto.QuestionDifficulty.HasValue)
-            {
-                errors.Add("QuestionDifficulty is required.");
-            }
-
-            if (!questionDto.QuestionMethodRequirement.HasValue)
-            {
-                errors.Add("QuestionMethodRequirement is required.");
-            }
-
-            if (!questionDto.Education.HasValue)
-            {
-                errors.Add("Education is required.");
-            }
-
-            if (!questionDto.QuestionContext.HasValue)
-            {
-                errors.Add("QuestionContext is required.");
-            }
-
-            if (!questionDto.StandardQuestion.HasValue)
-            {
-                errors.Add("StandardQuestion is required.");
-            }
-
-            if (!questionDto.NewOldSystem.HasValue)
-            {
-                errors.Add("NewOldSystem is required.");
-            }
-
-            if (!questionDto.UserId.HasValue || questionDto.UserId.Value <= 0)
-            {
-                errors.Add("UserId is required and must be greater than 0.");
-            }
-
-            if (questionDto.CourseId.HasValue && questionDto.CourseId.Value <= 0)
-            {
-                errors.Add("CourseId must be greater than 0 when provided.");
-            }
-
-            return errors;
+            return (question, new List<string>());
         }
     }
 }
