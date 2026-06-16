@@ -55,44 +55,5 @@ namespace feedbackFlowAPI.Controllers
             return CreatedAtAction(nameof(GetQuestion), new { id = question.Id }, question);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(int id, [FromBody] QuestionDTO questionDto)
-        {
-            if (questionDto == null)
-            {
-                return BadRequest(new { message = "Request body is required." });
-            }
-
-            if (id != questionDto.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(ModelState);
-            }
-
-            var updated = await _questionService.UpdateQuestionAsync(id, questionDto);
-            if (!updated)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuestion(int id)
-        {
-            var deleted = await _questionService.DeleteQuestionAsync(id);
-
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
     }
 }
