@@ -14,6 +14,8 @@ namespace feedbackFlowAPI.DTOs;
     [Required]
     public string Points { get; set; } = null!;
 
+    public IFormFile? File { get; set; }
+
     public DateTimeOffset? DeletedAt { get; set; }
 
     [Required]

@@ -18,11 +18,11 @@ namespace feedbackFlowAPI.Controllers
     public class QuestionSetsController : ControllerBase
     {
 
-        private readonly IQuestionSetService _service;
+        private readonly IQuestionSetService _setservice;
 
         public QuestionSetsController(IQuestionSetService service)
         {
-            _service = service;
+            _setservice = service;
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace feedbackFlowAPI.Controllers
         {
             try
             {
-                QuestionSetDTO createdSet = await _service.CreateQuestionSet(request.QuestionIds, request.SubjectId, request.Set);
+                QuestionSetDTO createdSet = await _setservice.CreateQuestionSet(request.QuestionIds, request.SubjectId, request.Set);
                 return Created(Request.Path.Value ?? string.Empty, createdSet);
             }
             catch (InvalidOperationException ex)
@@ -42,5 +42,27 @@ namespace feedbackFlowAPI.Controllers
                 return Conflict(ex.Message);
             }
         }
+
+        [HttpPost("save-and-download")]
+        public async Task<IActionResult> SaveAndDownloadSet([FromBody] CreateQuestionSetRequest request)
+        {
+            try
+            {
+               
+                byte[] pdfFile = await _setservice.CreateQuestionSetAndGeneratePdf(
+                    request.QuestionIds,
+                    request.SubjectId,
+                    request.Set
+                );
+
+                
+                return File(pdfFile, "application/pdf", $"{request.Set.Name}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

@@ -17,7 +17,7 @@ namespace feedbackFlowAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "class_level", new[] { "a", "b", "c", "d" });
@@ -108,13 +108,13 @@ namespace feedbackFlowAPI.Migrations
 
             modelBuilder.Entity("UserUserRole", b =>
                 {
-                    b.Property<int>("UserRoleId")
+                    b.Property<int>("UserRolesId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserRoleId", "UsersId");
+                    b.HasKey("UserRolesId", "UsersId");
 
                     b.HasIndex("UsersId");
 
@@ -181,7 +181,8 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnName("deleted_at");
 
                     b.Property<int>("Education")
-                        .HasColumnType("integer");
+                        .HasColumnType("education")
+                        .HasColumnName("education");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -567,8 +568,10 @@ namespace feedbackFlowAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
@@ -821,7 +824,7 @@ namespace feedbackFlowAPI.Migrations
                 {
                     b.HasOne("feedbackFlowAPI.Entities.UserRole", null)
                         .WithMany()
-                        .HasForeignKey("UserRoleId")
+                        .HasForeignKey("UserRolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -905,21 +908,21 @@ namespace feedbackFlowAPI.Migrations
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionQuestionSet", b =>
                 {
                     b.HasOne("feedbackFlowAPI.Entities.Question", "Question")
-                        .WithMany("QuestionSet")
+                        .WithMany("QuestionSets")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_questions_to_questionquestionset");
 
                     b.HasOne("feedbackFlowAPI.Entities.QuestionSet", "QuestionSet")
-                        .WithMany("Question")
+                        .WithMany("Questions")
                         .HasForeignKey("QuestionSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_questionsets_to_questionquestionset");
 
                     b.HasOne("feedbackFlowAPI.Entities.Subject", "Subject")
-                        .WithMany("QuestionQuestionSet")
+                        .WithMany("QuestionQuestionSets")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -994,23 +997,23 @@ namespace feedbackFlowAPI.Migrations
 
                     b.Navigation("QuestionCollections");
 
-                    b.Navigation("QuestionSet");
+                    b.Navigation("QuestionSets");
 
                     b.Navigation("StudentResults");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.QuestionSet", b =>
                 {
-                    b.Navigation("Question");
-
                     b.Navigation("QuestionAnswers");
+
+                    b.Navigation("Questions");
 
                     b.Navigation("StudentResults");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.Subject", b =>
                 {
-                    b.Navigation("QuestionQuestionSet");
+                    b.Navigation("QuestionQuestionSets");
                 });
 
             modelBuilder.Entity("feedbackFlowAPI.Entities.User", b =>

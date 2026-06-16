@@ -1,6 +1,7 @@
 ﻿
 using feedbackFlowAPI.Helpers;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using feedbackFlowAPI.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -55,6 +56,12 @@ namespace feedbackFlowAPI
                         o.MapEnum<NewOldSystem>("new_old_system");
                     });
             });
+
+
+            
+            builder.Services.AddScoped<IStorageService, MinioStorageService>();
+
+            QuestPDF.Settings.License = LicenseType.Community;
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
