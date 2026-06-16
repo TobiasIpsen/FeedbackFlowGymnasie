@@ -168,7 +168,7 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<ClassLevel>("ClassLevel")
+                    b.Property<int>("ClassLevel")
                         .HasColumnType("class_level")
                         .HasColumnName("class_level");
 
@@ -360,7 +360,7 @@ namespace feedbackFlowAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<ClassLevel>("ClassLevel")
+                    b.Property<int>("ClassLevel")
                         .HasColumnType("class_level")
                         .HasColumnName("class_level");
 
@@ -372,11 +372,11 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<Education>("Education")
+                    b.Property<int>("Education")
                         .HasColumnType("education")
                         .HasColumnName("education");
 
-                    b.Property<ExamType>("ExamType")
+                    b.Property<int>("ExamType")
                         .HasColumnType("exam_type")
                         .HasColumnName("exam_type");
 
@@ -385,7 +385,7 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("img_src");
 
-                    b.Property<NewOldSystem>("NewOldSystem")
+                    b.Property<int>("NewOldSystem")
                         .HasColumnType("new_old_system")
                         .HasColumnName("new_old_system");
 
@@ -394,19 +394,19 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("points");
 
-                    b.Property<QuestionContext>("QuestionContext")
+                    b.Property<int>("QuestionContext")
                         .HasColumnType("question_context")
                         .HasColumnName("question_context");
 
-                    b.Property<QuestionDifficulty>("QuestionDifficulty")
+                    b.Property<int>("QuestionDifficulty")
                         .HasColumnType("question_difficulty")
                         .HasColumnName("question_difficulty");
 
-                    b.Property<QuestionMethodRequirement>("QuestionMethodRequirement")
+                    b.Property<int>("QuestionMethodRequirement")
                         .HasColumnType("question_method_requirement")
                         .HasColumnName("question_method_requirement");
 
-                    b.Property<StandardQuestion>("StandardQuestion")
+                    b.Property<int>("StandardQuestion")
                         .HasColumnType("standard_question")
                         .HasColumnName("standard_question");
 
@@ -454,7 +454,7 @@ namespace feedbackFlowAPI.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("url");
 
-                    b.Property<Visibility>("Visibility")
+                    b.Property<int>("Visibility")
                         .HasColumnType("visibility")
                         .HasColumnName("visibility");
 
