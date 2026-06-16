@@ -2,42 +2,50 @@
 using Minio.DataModel.Args;
 using feedbackFlowAPI.Services.Interfaces;
 
-public class MinioStorageService : IStorageService
+namespace feedbackFlowAPI.Services.Implementations
 {
-    private readonly IMinioClient _minioClient;
-
-    public MinioStorageService()
+    public class MinioStorageService : IStorageService
     {
-            _minioClient = new MinioClient()
-            .WithEndpoint("localhost:9000")
-            .WithCredentials("admin", "password123")
-            .Build();
-    }
+        private readonly IMinioClient _minioClient;
 
-    public async Task<string> UploadFileAsync(IFormFile file, string bucketName)
-    {
-        
-        var beArgs = new BucketExistsArgs().WithBucket(bucketName);
-        bool found = await _minioClient.BucketExistsAsync(beArgs);
-        if (!found)
+        public MinioStorageService(IConfiguration configuration)
         {
-            await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
+           
+            var endpoint = configuration["MinioSettings:Endpoint"];
+            var accessKey = configuration["MinioSettings:AccessKey"];
+            var secretKey = configuration["MinioSettings:SecretKey"];
 
+            _minioClient = new MinioClient()
+                .WithEndpoint(endpoint)
+                .WithCredentials(accessKey, secretKey)
+                .Build();
         }
 
-        
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        public async Task<string> UploadFileAsync(IFormFile file, string bucketName)
+        {
 
-        using var stream = file.OpenReadStream();
-        await _minioClient.PutObjectAsync(new PutObjectArgs()
-            .WithBucket(bucketName)
-            .WithObject(fileName)
-            .WithStreamData(stream)
-            .WithObjectSize(file.Length)
-            .WithContentType(file.ContentType));
+            var beArgs = new BucketExistsArgs().WithBucket(bucketName);
+            bool found = await _minioClient.BucketExistsAsync(beArgs);
+            if (!found)
+            {
+                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
 
-        
+            }
 
-        return $"http://localhost:9000/{bucketName}/{fileName}";
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
+            using var stream = file.OpenReadStream();
+            await _minioClient.PutObjectAsync(new PutObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(fileName)
+                .WithStreamData(stream)
+                .WithObjectSize(file.Length)
+                .WithContentType(file.ContentType));
+
+
+
+            return $"http://localhost:9000/{bucketName}/{fileName}";
+        }
     }
 }

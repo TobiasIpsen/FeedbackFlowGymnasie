@@ -1,4 +1,5 @@
 ﻿using feedbackFlowAPI.Entities;
+using feedbackFlowAPI.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ public partial class QuestionAnswerDTO
 
     public int QuestionId { get; set; }
 
-
+    public Visibility visibility { get; set; }
 
     public int QuestionSetId { get; set; }
 

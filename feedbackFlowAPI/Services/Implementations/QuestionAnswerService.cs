@@ -34,7 +34,8 @@ public class QuestionAnswerService : IQuestionAnswerService
             Name = dto.Name,
             Url = fileUrl, // brug uploadet fil
             DeletedAt = dto.DeletedAt,
-            QuestionId = dto.QuestionId
+            QuestionId = dto.QuestionId,
+            Visibility = dto.visibility
         };
 
         var entry = await _context.QuestionAnswers.AddAsync(questionAnswer);
