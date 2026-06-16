@@ -1,7 +1,5 @@
 ﻿
 using feedbackFlowAPI.Helpers;
-using feedbackFlowAPI.Interface;
-using feedbackFlowAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
 using feedbackFlowAPI.Controllers;
@@ -35,8 +33,7 @@ namespace feedbackFlowAPI
             builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
             builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
             builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
-            builder.Services.AddScoped<feedbackFlowAPI.Interface.IQuestionService, feedbackFlowAPI.Services.QuestionService>();
-            builder.Services.AddScoped<feedbackFlowAPI.Services.Interfaces.IQuestionService, feedbackFlowAPI.Services.Implementations.QuestionService>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             builder.Services
                 .AddControllers()
@@ -85,16 +82,6 @@ namespace feedbackFlowAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.MapGet("/", () => Results.Ok(new
-            {
-                message = "FeedbackFlow API kører",
-                health = "/health",
-                users = "/api/users",
-                openApi = "/openapi/v1.json"
-            }));
-
-            app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
             app.MapControllers();
 
