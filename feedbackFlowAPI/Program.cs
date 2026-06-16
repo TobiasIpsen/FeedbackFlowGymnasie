@@ -3,6 +3,7 @@ using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Interface;
 using feedbackFlowAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using feedbackFlowAPI.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -20,6 +21,11 @@ namespace feedbackFlowAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
 
             // Add services to the container.
             builder.Services.AddSingleton<IStudentResultMapper, StudentResultMapper>();
@@ -58,6 +64,12 @@ namespace feedbackFlowAPI
                         o.MapEnum<NewOldSystem>("new_old_system");
                     });
             });
+
+
+            
+            builder.Services.AddScoped<IStorageService, MinioStorageService>();
+
+            QuestPDF.Settings.License = LicenseType.Community;
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();

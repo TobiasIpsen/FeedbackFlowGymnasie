@@ -16,15 +16,39 @@ namespace feedbackFlowAPI.Controllers
     [ApiController]
     public class QuestionsController : ControllerBase
     {
-        private readonly feedbackFlowAPI.Interface.IQuestionService _questionService;
-        private readonly feedbackFlowAPI.Services.Interfaces.IQuestionService _questionQueryService;
+        private readonly IQuestionService _service;
+        private readonly IStorageService _storageService;
 
-        public QuestionsController(feedbackFlowAPI.Interface.IQuestionService questionService, feedbackFlowAPI.Services.Interfaces.IQuestionService questionQueryService)
+        public QuestionsController(IQuestionService service, IStorageService storageService)
         {
-            _questionService = questionService;
-            _questionQueryService = questionQueryService;
+            _context = context;
+            _storageService = storageService;
         }
 
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> CreateQuestion([FromForm] QuestionDTO dto)
+        {
+            string fileUrl = null;
+
+           
+            if (dto.File != null)
+            {
+                
+                fileUrl = await _storageService.UploadFileAsync(dto.File, "questions");
+            }
+
+            
+            var newQuestion = new Question
+            {
+                ImgSrc = fileUrl, 
+                Points = dto.Points,
+
+            };
+
+            return CreatedAtAction(nameof(GetQuestion), new { id = newQuestion.Id }, newQuestion);
+        }
+        // GET: api/Questions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {

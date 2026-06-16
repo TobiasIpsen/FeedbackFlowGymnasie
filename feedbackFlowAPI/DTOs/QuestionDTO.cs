@@ -22,6 +22,10 @@ namespace feedbackFlowAPI.DTOs
 
         [Required]
         public ExamType? ExamType { get; set; }
+        
+        public IFormFile? File { get; set; }
+
+        public DateTimeOffset? DeletedAt { get; set; }
 
         [Required]
         public ClassLevel? ClassLevel { get; set; }
