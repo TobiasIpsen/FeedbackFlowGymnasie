@@ -1,8 +1,7 @@
 ﻿
 using feedbackFlowAPI.Helpers;
-using feedbackFlowAPI.Interface;
-using feedbackFlowAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using feedbackFlowAPI.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -21,6 +20,11 @@ namespace feedbackFlowAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
             // Add services to the container.
             builder.Services.AddSingleton<IStudentResultMapper, StudentResultMapper>();
             builder.Services.AddScoped<IStudentResultsService, StudentResultsService>();
@@ -29,8 +33,7 @@ namespace feedbackFlowAPI
             builder.Services.AddSingleton<IQuestionSetMapper, QuestionSetMapper>();
             builder.Services.AddScoped<IQuestionSetService, QuestionSetService>();
             builder.Services.AddSingleton<IQuestionMapper, QuestionMapper>();
-            builder.Services.AddScoped<feedbackFlowAPI.Interface.IQuestionService, feedbackFlowAPI.Services.QuestionService>();
-            builder.Services.AddScoped<feedbackFlowAPI.Services.Interfaces.IQuestionService, feedbackFlowAPI.Services.Implementations.QuestionService>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             builder.Services
                 .AddControllers()
@@ -59,6 +62,12 @@ namespace feedbackFlowAPI
                     });
             });
 
+
+            
+            builder.Services.AddScoped<IStorageService, MinioStorageService>();
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -73,16 +82,6 @@ namespace feedbackFlowAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.MapGet("/", () => Results.Ok(new
-            {
-                message = "FeedbackFlow API kører",
-                health = "/health",
-                users = "/api/users",
-                openApi = "/openapi/v1.json"
-            }));
-
-            app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
             app.MapControllers();
 
