@@ -1,5 +1,6 @@
 ﻿using feedbackFlowAPI.DTOs;
 using feedbackFlowAPI.Entities;
+using feedbackFlowAPI.Helpers.ControllerHelpers;
 using feedbackFlowAPI.Mappers.Interface;
 
 namespace feedbackFlowAPI.Mappers.Implementations
@@ -10,16 +11,21 @@ namespace feedbackFlowAPI.Mappers.Implementations
         {
             return new QuestionSetDTO
             {
+                id = entity.Id,
                 Name = entity.Name,
                 IsExam = entity.IsExam,
                 IsDraft = entity.IsDraft,
                 DeletedAt = entity.DeletedAt,
                 TeacherId = entity.TeacherId,
                 Questions = entity.Questions
+                    .OrderBy(q => q.Order)
                     .Select(q => 
                         new QuestionQuestionSetDTO
                         {
+                            SubjectId = q.SubjectId,
                             QuestionId = q.QuestionId,
+                            Order = q.Order,
+                            QuestionSetId = q.QuestionSetId
                         })
                     .ToList(),
             };
@@ -35,11 +41,12 @@ namespace feedbackFlowAPI.Mappers.Implementations
                 DeletedAt = dto.DeletedAt,
                 TeacherId = dto.TeacherId,
                 Questions = questionIds
-                    .Select(id =>
+                    .Select((id, index) =>
                         new QuestionQuestionSet
                         {
                             SubjectId = subjectId,
                             QuestionId = id,
+                            Order = index
                         })
                     .ToList()
             };
