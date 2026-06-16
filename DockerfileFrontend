@@ -4,16 +4,16 @@ RUN addgroup --system dockergroup && adduser --system dockeruser --group dockerg
 USER dockeruser
 WORKDIR /app
 
-COPY /feedbackFlowAPI/feedbackFlowAPI.csproj .
-RUN dotnet restore "feedbackFlowAPI.csproj"
+COPY /feedbackFlowFront/feedbackFlowFront.csproj .
+RUN dotnet restore "feedbackFlowFront.csproj"
 
-COPY ./feedbackFlowAPI .
-RUN dotnet publish "feedbackFlowAPI.csproj" --output /app/publish
+COPY ./feedbackFlowFront .
+RUN dotnet publish "feedbackFlowFront.csproj" --output /app/publish
 
 # Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 RUN addgroup -S dockergroup && adduser -S dockeruser -G dockergroup
 USER dockeruser
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT [ "dotnet", "feedbackFlowAPI.dll" ]
+ENTRYPOINT [ "dotnet", "feedbackFlowFront.dll" ]
