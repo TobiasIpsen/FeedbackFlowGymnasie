@@ -1,7 +1,7 @@
 using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
-using feedbackFlowAPI.Interface;
+using feedbackFlowAPI.Helpers.ControllerHelpers;
+using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace feedbackFlowAPI.Services
@@ -15,54 +15,36 @@ namespace feedbackFlowAPI.Services
             _context = context;
         }
 
-        public async Task<List<Question>> GetQuestionsAsync()
+        public async Task<GetQuestionResponse> GetQuestions(GetQuestionRequest getQuestionRequest)
         {
-            return await _context.Questions.ToListAsync();
-        }
+            var questions = await _context.Questions
+                .AsNoTracking()
+                .OrderByDescending(q => q.Id)
+                .Where(q => q.DeletedAt == null)
+                .Where(q => q.Id < getQuestionRequest.LastId)
+                .Take(getQuestionRequest.PageSize)
+                .Select(q => new QuestionDTO
+                {
+                    Id = q.Id,
+                    ImgSrc = q.ImgSrc,
+                    Points = q.Points,
+                    DeletedAt = q.DeletedAt,
+                    ExamType = q.ExamType,
+                    ClassLevel = q.ClassLevel,
+                    QuestionDifficulty = q.QuestionDifficulty,
+                    QuestionMethodRequirement = q.QuestionMethodRequirement,
+                    Education = q.Education,
+                    QuestionContext = q.QuestionContext,
+                    StandardQuestion = q.StandardQuestion,
+                    NewOldSystem = q.NewOldSystem
+                })
+                .ToListAsync();
 
-        public async Task<Question?> GetQuestionByIdAsync(int id)
-        {
-            return await _context.Questions.FindAsync(id);
-        }
-
-        public async Task<(Question? Question, List<string> Errors)> CreateQuestionAsync(QuestionDTO questionDto)
-        {
-            var question = new Question
+            return new GetQuestionResponse
             {
-                ImgSrc = questionDto.ImgSrc.Trim(),
-                Points = questionDto.Points.Trim(),
-                DeletedAt = questionDto.DeletedAt,
-                ExamType = questionDto.ExamType!.Value,
-                ClassLevel = questionDto.ClassLevel!.Value,
-                QuestionDifficulty = questionDto.QuestionDifficulty!.Value,
-                QuestionMethodRequirement = questionDto.QuestionMethodRequirement!.Value,
-                Education = questionDto.Education!.Value,
-                QuestionContext = questionDto.QuestionContext!.Value,
-                StandardQuestion = questionDto.StandardQuestion!.Value,
-                NewOldSystem = questionDto.NewOldSystem!.Value,
-                CourseId = questionDto.CourseId,
-                UserId = questionDto.UserId!.Value
+                Questions = questions,
+                LastId = questions.Any() ? questions.Last().Id : null
             };
-
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
-
-            return (question, new List<string>());
         }
-
-        public async Task<bool> DeleteQuestionAsync(int id)
-        {
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
-            {
-                return false;
-            }
-
-            question.DeletedAt = DateTimeOffset.UtcNow;
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
     }
 }

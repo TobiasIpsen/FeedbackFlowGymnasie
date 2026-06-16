@@ -3,12 +3,6 @@ using System;
 using System.Collections.Generic;
 
 namespace feedbackFlowAPI.DTOs;
-
-public partial class QuestionDTO
-{
-    public int Id { get; set; }
-namespace feedbackFlowAPI.DTOs
-{
     public class QuestionDTO
     { 
         
