@@ -42,5 +42,37 @@ namespace feedbackFlowAPI.Controllers
                 return Conflict(ex.Message);
             }
         }
+
+        [HttpGet("{classId}/students")]
+        public async Task<ActionResult<IEnumerable<ClassStudentDTO>>> GetStudentsForClass(int classId)
+        {
+            var students = await _service.GetStudentsForClass(classId);
+            return Ok(students);
+        }
+
+        [HttpGet("{classId}/students/search")]
+        public async Task<ActionResult<IEnumerable<StudentLookupDTO>>> SearchStudents(int classId, [FromQuery] string? query)
+        {
+            var students = await _service.SearchStudents(query, classId);
+            return Ok(students);
+        }
+
+        [HttpPost("{classId}/students")]
+        public async Task<IActionResult> AddStudentToClass(int classId, [FromBody] ClassStudentMutationDTO request)
+        {
+            if (request.StudentId <= 0)
+            {
+                return BadRequest("StudentId must be greater than 0.");
+            }
+
+            var success = await _service.AddStudentToClass(classId, request.StudentId);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
     }
 }
