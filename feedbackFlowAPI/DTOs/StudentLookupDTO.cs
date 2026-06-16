@@ -1,3 +1,6 @@
+namespace feedbackFlowAPI.DTOs.StudentLookupDTO;
+
+
 public class StudentLookupDTO
 {
     public int Id { get; set; }

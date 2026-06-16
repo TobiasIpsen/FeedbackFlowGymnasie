@@ -10,3 +10,4 @@ public class ClassStudentDTO
 
     public string Email { get; set; } = string.Empty;
 }
+

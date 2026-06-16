@@ -6,6 +6,7 @@ using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Npgsql;
+using feedbackFlowAPI.DTOs.StudentLookupDTO;
 
 namespace feedbackFlowAPI.Services.Implementations
 {

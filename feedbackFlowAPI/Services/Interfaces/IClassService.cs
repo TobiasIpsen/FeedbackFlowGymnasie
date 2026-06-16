@@ -1,4 +1,5 @@
 ﻿using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.DTOs.StudentLookupDTO;
 
 namespace feedbackFlowAPI.Services.Interfaces
 {
