@@ -58,7 +58,7 @@ namespace feedbackFlowAPI.Services
                 return false;
             }
 
-            _context.Questions.Remove(question);
+            question.DeletedAt = DateTimeOffset.UtcNow;
             await _context.SaveChangesAsync();
 
             return true;
