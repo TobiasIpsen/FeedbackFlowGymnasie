@@ -1,122 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.Entities;
+using feedbackFlowAPI.Helpers;
+using feedbackFlowAPI.Helpers.ControllerHelpers;
+using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using feedbackFlowAPI.Entities;
-using feedbackFlowAPI.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace feedbackFlowAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuestionCollectionsController : ControllerBase
+    public class QuestionSetsController : ControllerBase
     {
-        private readonly FbfDbContext _context;
 
-        public QuestionCollectionsController(FbfDbContext context)
+        private readonly IQuestionSetService _service;
+
+        public QuestionSetsController(IQuestionSetService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Questioncollections
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<QuestionCollection>>> GetQuestioncollections()
-        {
-            return await _context.QuestionCollections.ToListAsync();
-        }
-
-        // GET: api/Questioncollections/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<QuestionCollection>> GetQuestioncollection(int id)
-        {
-            var questioncollection = await _context.QuestionCollections.FindAsync(id);
-
-            if (questioncollection == null)
-            {
-                return NotFound();
-            }
-
-            return questioncollection;
-        }
-
-        // PUT: api/Questioncollections/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestioncollection(int id, QuestionCollection questioncollection)
-        {
-            if (id != questioncollection.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(questioncollection).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!QuestioncollectionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Questioncollections
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<QuestionCollection>> PostQuestioncollection(QuestionCollection questioncollection)
+        public async Task<ActionResult<QuestionSetDTO>> CreateQuestionSet([FromBody] CreateQuestionSetRequest request)
         {
-            _context.QuestionCollections.Add(questioncollection);
             try
             {
-                await _context.SaveChangesAsync();
+                QuestionSetDTO createdSet = await _service.CreateQuestionSet(request.QuestionIds, request.SubjectId, request.Set);
+                return Created(Request.Path.Value ?? string.Empty, createdSet);
             }
-            catch (DbUpdateException)
+            catch (InvalidOperationException ex)
             {
-                if (QuestioncollectionExists(questioncollection.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict(ex.Message);
             }
-
-            return CreatedAtAction("GetQuestioncollection", new { id = questioncollection.Id }, questioncollection);
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
 
-        // DELETE: api/Questioncollections/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuestioncollection(int id)
+        [HttpPost("save-and-download")]
+        public async Task<IActionResult> SaveAndDownloadSet([FromBody] CreateQuestionSetRequest request)
         {
-            var questioncollection = await _context.QuestionCollections.FindAsync(id);
-            if (questioncollection == null)
+            try
             {
-                return NotFound();
+
+                byte[] pdfFile = await _service.CreateQuestionSetAndGeneratePdf(
+                    request.QuestionIds,
+                    request.SubjectId,
+                    request.Set
+                );
+
+
+                return File(pdfFile, "application/pdf", $"{request.Set.Name}.pdf");
             }
-
-            _context.QuestionCollections.Remove(questioncollection);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool QuestioncollectionExists(int id)
-        {
-            return _context.QuestionCollections.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
