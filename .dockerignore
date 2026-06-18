@@ -15,6 +15,9 @@
 credentials
 secrets.yml
 secrets.yaml
+README.md
+docker-compose*
+Dockerfile
 
 # Build outputs
 dist/

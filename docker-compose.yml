@@ -56,10 +56,10 @@ services:
   #   command: dotnet watch run --no-launch-profile
   
   dotnet:
-    container_name: aspNet
-    image: feedbackflowgymnasie-dotnet
+    container_name: api
+    image: tobiasipsen/feedbackFlowAPI:latest
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://*:80
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
@@ -69,8 +69,18 @@ services:
     networks:
       - backend
       - otel
-    volumes:
-      - ~/.aspnet/https:/https:ro
+
+  frontend:
+    container_name: frontend
+    image: tobiasipsen/feedbackFlowFrontend:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ApiBaseUrl=http://dotnet:80
+    ports:
+      - 8080:80
+    networks:
+      - backend
+      - otel
 
   grafana:
     image: grafana/grafana:11.6

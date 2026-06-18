@@ -1,7 +1,5 @@
 # Build Code
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-RUN addgroup --system dockergroup && adduser --system dockeruser --group dockergroup
-USER dockeruser
 WORKDIR /app
 
 COPY /feedbackFlowFront/feedbackFlowFront.csproj .
@@ -16,4 +14,5 @@ RUN addgroup -S dockergroup && adduser -S dockeruser -G dockergroup
 USER dockeruser
 WORKDIR /app
 COPY --from=build /app/publish .
+# RUN chown -R dockeruser:dockergroup /app
 ENTRYPOINT [ "dotnet", "feedbackFlowFront.dll" ]
