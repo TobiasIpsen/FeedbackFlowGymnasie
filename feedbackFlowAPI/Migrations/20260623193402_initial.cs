@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using feedbackFlowAPI.Helpers;
 
 #nullable disable
 
@@ -9,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace feedbackFlowAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -118,10 +119,11 @@ namespace feedbackFlowAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying", nullable: false),
                     year = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    Education = table.Column<int>(type: "integer", nullable: false),
-                    class_level = table.Column<int>(type: "class_level", nullable: false),
+                    education = table.Column<Education>(type: "education", nullable: false),
+                    class_level = table.Column<ClassLevel>(type: "class_level", nullable: false),
                     deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    course_id = table.Column<int>(type: "integer", nullable: false)
+                    course_id = table.Column<int>(type: "integer", nullable: false),
+                    TeacherId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,7 +132,14 @@ namespace feedbackFlowAPI.Migrations
                         name: "fk_courses_to_classes",
                         column: x => x.course_id,
                         principalTable: "courses",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_teacher_to_classes",
+                        column: x => x.TeacherId,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -165,14 +174,14 @@ namespace feedbackFlowAPI.Migrations
                     img_src = table.Column<string>(type: "character varying", nullable: false),
                     points = table.Column<string>(type: "character varying", nullable: false),
                     deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    exam_type = table.Column<int>(type: "exam_type", nullable: false),
-                    class_level = table.Column<int>(type: "class_level", nullable: false),
-                    question_difficulty = table.Column<int>(type: "question_difficulty", nullable: false),
-                    question_method_requirement = table.Column<int>(type: "question_method_requirement", nullable: false),
-                    education = table.Column<int>(type: "education", nullable: false),
-                    question_context = table.Column<int>(type: "question_context", nullable: false),
-                    standard_question = table.Column<int>(type: "standard_question", nullable: false),
-                    new_old_system = table.Column<int>(type: "new_old_system", nullable: false),
+                    exam_type = table.Column<ExamType>(type: "exam_type", nullable: false),
+                    class_level = table.Column<ClassLevel>(type: "class_level", nullable: false),
+                    question_difficulty = table.Column<QuestionDifficulty>(type: "question_difficulty", nullable: false),
+                    question_method_requirement = table.Column<QuestionMethodRequirement>(type: "question_method_requirement", nullable: false),
+                    education = table.Column<Education>(type: "education", nullable: false),
+                    question_context = table.Column<QuestionContext>(type: "question_context", nullable: false),
+                    standard_question = table.Column<StandardQuestion>(type: "standard_question", nullable: false),
+                    new_old_system = table.Column<NewOldSystem>(type: "new_old_system", nullable: false),
                     course_id = table.Column<int>(type: "integer", nullable: true),
                     user_id = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -195,15 +204,15 @@ namespace feedbackFlowAPI.Migrations
                 name: "UserUserRole",
                 columns: table => new
                 {
-                    UserRoleId = table.Column<int>(type: "integer", nullable: false),
+                    UserRolesId = table.Column<int>(type: "integer", nullable: false),
                     UsersId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserUserRole", x => new { x.UserRoleId, x.UsersId });
+                    table.PrimaryKey("PK_UserUserRole", x => new { x.UserRolesId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_UserUserRole_user_roles_UserRoleId",
-                        column: x => x.UserRoleId,
+                        name: "FK_UserUserRole_user_roles_UserRolesId",
+                        column: x => x.UserRolesId,
                         principalTable: "user_roles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -219,21 +228,21 @@ namespace feedbackFlowAPI.Migrations
                 name: "ClassUser",
                 columns: table => new
                 {
-                    ClassesId = table.Column<int>(type: "integer", nullable: false),
-                    UsersId = table.Column<int>(type: "integer", nullable: false)
+                    StudentClassesId = table.Column<int>(type: "integer", nullable: false),
+                    StudentsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassUser", x => new { x.ClassesId, x.UsersId });
+                    table.PrimaryKey("PK_ClassUser", x => new { x.StudentClassesId, x.StudentsId });
                     table.ForeignKey(
-                        name: "FK_ClassUser_classes_ClassesId",
-                        column: x => x.ClassesId,
+                        name: "FK_ClassUser_classes_StudentClassesId",
+                        column: x => x.StudentClassesId,
                         principalTable: "classes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClassUser_users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_ClassUser_users_StudentsId",
+                        column: x => x.StudentsId,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -293,7 +302,7 @@ namespace feedbackFlowAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying", nullable: true),
                     url = table.Column<string>(type: "character varying", nullable: true),
-                    visibility = table.Column<int>(type: "visibility", nullable: false),
+                    visibility = table.Column<Visibility>(type: "visibility", nullable: false),
                     deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     question_id = table.Column<int>(type: "integer", nullable: false),
                     question_set_id = table.Column<int>(type: "integer", nullable: false, comment: "f.feks. svar til hele questionset i stedet for kun 1 question")
@@ -339,7 +348,8 @@ namespace feedbackFlowAPI.Migrations
                 {
                     subject_id = table.Column<int>(type: "integer", nullable: false),
                     question_id = table.Column<int>(type: "integer", nullable: false),
-                    question_set_id = table.Column<int>(type: "integer", nullable: false)
+                    question_set_id = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -394,10 +404,10 @@ namespace feedbackFlowAPI.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    teacher_point = table.Column<string>(type: "character varying", nullable: true),
+                    teacher_point = table.Column<int>(type: "integer", nullable: true),
                     teacher_feedback = table.Column<string>(type: "character varying", nullable: true),
-                    student_self_assessment_points = table.Column<string>(type: "character varying", nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    student_self_assessment_points = table.Column<int>(type: "integer", nullable: true),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     teacher_id = table.Column<int>(type: "integer", nullable: false),
                     student_id = table.Column<int>(type: "integer", nullable: false),
@@ -544,9 +554,14 @@ namespace feedbackFlowAPI.Migrations
                 column: "course_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassUser_UsersId",
+                name: "IX_classes_TeacherId",
+                table: "classes",
+                column: "TeacherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassUser_StudentsId",
                 table: "ClassUser",
-                column: "UsersId");
+                column: "StudentsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContentTypeQuestion_QuestionsId",
