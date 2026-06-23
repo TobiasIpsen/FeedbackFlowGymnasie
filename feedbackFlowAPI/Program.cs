@@ -11,6 +11,11 @@ using feedbackFlowAPI.Services.Interfaces;
 using feedbackFlowAPI.Services.Implementations;
 using feedbackFlowAPI.Mappers.Implementations;
 using feedbackFlowAPI.Mappers.Interface;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using Npgsql;
 
 namespace feedbackFlowAPI
 {
@@ -19,6 +24,34 @@ namespace feedbackFlowAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            const string serviceName = "feeback-flow-api";
+
+            builder.Logging.AddOpenTelemetry(options =>
+            {
+                options
+                    .SetResourceBuilder(
+                        ResourceBuilder.CreateDefault().AddService(serviceName));
+                options.AddOtlpExporter();
+                options.ParseStateValues = true;
+                options.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+            });
+            builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService(serviceName))
+                .WithTracing(tracing => tracing
+                    .AddAspNetCoreInstrumentation()
+                    //.AddConsoleExporter()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddNpgsql()
+                    .AddOtlpExporter())
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()
+                    //.AddConsoleExporter()
+                    .AddHttpClientInstrumentation()
+                    .AddNpgsqlInstrumentation()
+                    .AddOtlpExporter());
 
             // Add services to the container.
             builder.Services.AddSingleton<IStudentResultMapper, StudentResultMapper>();

@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /app
+
+COPY ./feedbackFlowAPI/feedbackFlowAPI.csproj .
+RUN dotnet restore
+COPY ./feedbackFlowAPI .
+
+EXPOSE 80
+EXPOSE 443
+
+# CMD [ "dotnet", "watch", "run", "--project", "feedbackFlowAPI/feedbackFlowAPI.csproj", "--urls", "https://*:443;http://*:80" ]
+ENTRYPOINT [ "dotnet", "watch", "run", "--no-launch-profile" ]
