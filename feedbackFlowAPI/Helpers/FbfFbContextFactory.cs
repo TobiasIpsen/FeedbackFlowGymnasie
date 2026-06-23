@@ -14,7 +14,20 @@ namespace feedbackFlowAPI.Helpers
 
             var builder = new DbContextOptionsBuilder<FbfDbContext>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            builder.UseNpgsql(connectionString);
+            builder.UseNpgsql(
+                connectionString,
+                npgsqlOptionsAction: o =>
+                {
+                    o.MapEnum<ClassLevel>("class_level");
+                    o.MapEnum<ExamType>("exam_type");
+                    o.MapEnum<Visibility>("visibility");
+                    o.MapEnum<QuestionDifficulty>("question_difficulty");
+                    o.MapEnum<QuestionMethodRequirement>("question_method_requirement");
+                    o.MapEnum<Education>("education");
+                    o.MapEnum<QuestionContext>("question_context");
+                    o.MapEnum<StandardQuestion>("standard_question");
+                    o.MapEnum<NewOldSystem>("new_old_system");
+                });
 
             return new FbfDbContext(builder.Options);
         }

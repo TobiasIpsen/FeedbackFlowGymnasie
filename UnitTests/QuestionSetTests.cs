@@ -1,114 +1,68 @@
 ﻿using feedbackFlowAPI.DTOs;
-using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Mappers.Implementations;
 using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Implementations;
 using feedbackFlowAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using FluentAssertions;
 
 namespace UnitTests
 {
-    public class QuestionSetTests
+    public class QuestionSetTests : IClassFixture<PostgreSqlTestFixture>
     {
-        [Fact]
-        public async Task QuestionsInQuestionSet_True()
+        private PostgreSqlTestFixture _fixture;
+
+        public QuestionSetTests(PostgreSqlTestFixture fixture)
         {
-            /*
-            Arrange:
-            Create in memory DbContext
-            Add entities to in memory db
-            Create mapper
-            Instantiate service
-            Create test DTOS
+            _fixture = fixture;
+        }
 
-            Act:
-            Call CreateQuestionSets
+        [Theory, MemberData(nameof(GetQuestionSet))]
+        public async Task CreatedQuestionSet_ShouldBe_QuestionSet(QuestionSetDTO questionSetData)
+        {
+            //Arrange
+            FbfDbContext _context = new FbfDbContext(_fixture.DbContextOptions);
+            IQuestionSetMapper _mapper = new QuestionSetMapper();
+            IQuestionSetService _service = new QuestionSetService(_context, _mapper);
+            var questions = _context.Questions.Take(2).Select(q => q.Id).ToList();
+            var subject = _context.Subjects.First();
 
-            Assert:
-            Questions are added
-            Relationships are correct
-            Data is saved
-            */
+            //Act
+            var questionSet = await _service.CreateQuestionSet(questions, subject.Id, questionSetData);
 
-            //Arrange:
-            var options = new DbContextOptionsBuilder<FbfDbContext>()
-                .UseInMemoryDatabase(databaseName: "db_" + Guid.NewGuid())
-                .Options;
+            //Assert
+            questionSet.Name.Should().Be(questionSetData.Name);
+            questionSet.IsExam.Should().Be(questionSetData.IsExam);
+            questionSet.IsDraft.Should().Be(questionSetData.IsDraft);
+            questionSet.TeacherId.Should().Be(questionSetData.TeacherId);
+            questionSet.Questions.Select(q => q.QuestionId).Should().Contain(questions);
+            questionSet.Questions.Should().HaveCount(questions.Count);
+            questionSet.Questions.Select(q => q.Order).Should().BeInAscendingOrder();
+        }
 
-            QuestionSetDTO dto = new QuestionSetDTO
+        public static IEnumerable<object[]> GetQuestionSet()
+        {
+            yield return new object[]
             {
-                Name = "",
-                IsExam = false,
-                IsDraft = true,
-                TeacherId = 1
+                new QuestionSetDTO
+                {
+                    Name = "Awesome Question Set",
+                    IsExam = true,
+                    IsDraft = false,
+                    TeacherId = 2
+                }
             };
 
-            await using (var context = new FbfDbContext(options))
+            yield return new object[]
             {
-                IQuestionSetMapper mapper = new QuestionSetMapper();
-                IQuestionSetService service = new QuestionSetService(context, mapper);
-
-                await context.Users.AddAsync(new User { Firstname = "Tobias", Lastname = "I", Email = "a@a.dk" });
-                await context.Courses.AddAsync(new Course { Name = "Math" });
-                await context.Subjects.AddAsync(new Subject { Name = "Sub1" });
-
-                Question q1 = new Question
+                new QuestionSetDTO
                 {
-                    ImgSrc = "abc/123.png",
-                    Points = "10",
-                    ExamType = ExamType.Analog,
-                    ClassLevel = ClassLevel.A,
-                    QuestionDifficulty = QuestionDifficulty.Hard,
-                    QuestionMethodRequirement = QuestionMethodRequirement.NoRequirement,
-                    Education = Education.HF,
-                    QuestionContext = QuestionContext.YesLight,
-                    StandardQuestion = StandardQuestion.Yes,
-                    NewOldSystem = NewOldSystem.New,
-                    CourseId = 1,
-                    UserId = 1,
-                };
-                Question q2 = new Question
-                {
-                    ImgSrc = "abc/456.png",
-                    Points = "5",
-                    ExamType = ExamType.Digital,
-                    ClassLevel = ClassLevel.B,
-                    QuestionDifficulty = QuestionDifficulty.Easy,
-                    QuestionMethodRequirement = QuestionMethodRequirement.ApplyFormula,
-                    Education = Education.HHX,
-                    QuestionContext = QuestionContext.No,
-                    StandardQuestion = StandardQuestion.WithATwist,
-                    NewOldSystem = NewOldSystem.Old,
-                    CourseId = 1,
-                    UserId = 1,
-                };
-                await context.Questions.AddAsync(q1);
-                await context.Questions.AddAsync(q2);
-
-                await context.SaveChangesAsync();
-
-                var course = await context.Courses.FirstAsync();
-                var subject = await context.Subjects.FirstAsync();
-                var user = await context.Users.FirstAsync();
-                var questions = await context.Questions.ToListAsync();
-
-
-                List<int> questionIds = questions.Select(q => q.Id).ToList();
-
-                //Act:
-                QuestionSetDTO answer = await service.CreateQuestionSet(questionIds, subject.Id, dto);
-
-
-                //Assert:
-                Assert.Equal(2, answer.Questions.Count);
-                Assert.Contains(answer.Questions, q => q.QuestionId == q1.Id);
-                Assert.Contains(answer.Questions, q => q.QuestionId == q2.Id);
-
-                var dbAnswer = await context.QuestionSets.FindAsync(1);
-                Assert.Equal(1, dbAnswer.Id);
-                Assert.Equal(2, dbAnswer.Questions.Count);
-            }
+                    Name = "Very Cool Question Set",
+                    IsExam = false,
+                    IsDraft = true,
+                    TeacherId = 1
+                }
+            };
         }
     }
 }

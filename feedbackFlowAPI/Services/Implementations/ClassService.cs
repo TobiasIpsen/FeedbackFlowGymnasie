@@ -1,10 +1,12 @@
 ﻿using feedbackFlowAPI.DTOs;
+using feedbackFlowAPI.DTOs.ClassStatistics;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using Npgsql;
 using feedbackFlowAPI.DTOs.StudentLookupDTO;
 
@@ -158,5 +160,148 @@ namespace feedbackFlowAPI.Services.Implementations
             return true;
         }
 
+
+        public async Task<ClassStatisticsDTO> GetStatistics(int ClassId, int QuestionSetId)
+        {
+
+            var rawData = await _context.StudentResults
+                .AsNoTracking()
+                .Where(sr => sr.Student.StudentClasses.Any(sc => sc.Id == ClassId))
+                .Where(sr => sr.QuestionSetId == QuestionSetId)
+                .Select(sr => new
+                {
+                    Student = sr.Student,
+                    TeacherPoint = sr.TeacherPoint,
+                    ExamType = sr.Question.ExamType,
+                    Subject = sr.QuestionSet.Questions
+                                    .First(q => q.QuestionId == sr.QuestionId).Subject,
+                    Question = sr.QuestionSet.Questions
+                                    .First(q => q.QuestionId == sr.QuestionId)
+                })
+                .ToListAsync();
+
+            var digital = rawData.Where(x => x.ExamType == ExamType.Digital).ToList();
+            var analog = rawData.Where(x => x.ExamType == ExamType.Analog).ToList();
+
+            List<StudentsScore> StudentsScoreAssignments = rawData
+                .Select(sr => new StudentsScore(
+                    User: new UserDTO(sr.Student),
+                    Question: new QuestionQuestionSetDTO(sr.Question),
+                    Score: sr.TeacherPoint  ?? 0
+                    ))
+                .ToList();
+
+            #region ClassAvgScore
+            double ClassAvgScoreCombined = Math.Round(rawData
+                .Average(s => s.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+
+            double ClassAvgScoreDigital = Math.Round(digital
+                .Average(sr => sr.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+
+            double ClassAvgScoreAnalog = Math.Round(analog
+                .Average(sr => sr.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+            #endregion
+
+
+            #region ClassAvgSubjectScore
+            var ClassAvgSubjectScoreCombined = rawData
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScoreCombined(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var ClassAvgSubjectScoreDigital = digital
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScore(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    ExamType: group.First().ExamType,
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var ClassAvgSubjectScoreAnalog = analog
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScore(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    ExamType: group.First().ExamType,
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            #endregion
+
+
+            #region StudentsAvgScore
+            var StudentsAvgScoreCombined = rawData
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var StudentsAvgScoreDigital = digital
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var StudentsAvgScoreAnalog = analog
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+            #endregion
+
+
+            #region StudentAvgSccoreSubject
+            var StudentsAvgScoreSubject = rawData
+                    .GroupBy(x => new { x.Subject.Id, x.Student })
+                    .Select(group => new StudentsAvgScoreSubject(
+                        User: new UserDTO(group.Key.Student),
+                        Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                        Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                    ))
+                    .ToList();
+            #endregion
+
+
+            #region WeakestSubjects
+            var WeakestSubjects = rawData
+                .GroupBy(x => x.Subject)
+                .Select(group => new WeakSubject(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .OrderByDescending(x => x.Score)
+                .ToList();
+                
+            #endregion
+
+            return new ClassStatisticsDTO
+            {
+                StudentsScoreAssignments = StudentsScoreAssignments,
+                ClassAvgScoreCombined = ClassAvgScoreCombined,
+                ClassAvgScoreDigital = ClassAvgScoreDigital,
+                ClassAvgScoreAnalog = ClassAvgScoreAnalog,
+                ClassAvgSubjectScoreCombined = ClassAvgSubjectScoreCombined,
+                ClassAvgSubjectScoreDigital = ClassAvgSubjectScoreDigital,
+                ClassAvgSubjectScoreAnalog = ClassAvgSubjectScoreAnalog,
+                StudentsAvgScoreCombined = StudentsAvgScoreCombined,
+                StudentsAvgScoreDigital = StudentsAvgScoreDigital,
+                StudentsAvgScoreAnalog = StudentsAvgScoreAnalog,
+                StudentsAvgScoreSubject = StudentsAvgScoreSubject,
+                WeakestSubjects = WeakestSubjects,
+            };
+        }
     }
 }

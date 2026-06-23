@@ -1,4 +1,6 @@
-﻿namespace feedbackFlowAPI.DTOs
+﻿using feedbackFlowAPI.Entities;
+
+namespace feedbackFlowAPI.DTOs
 {
     public class QuestionQuestionSetDTO
     {
@@ -9,5 +11,17 @@
         public int QuestionSetId { get; set; }
 
         public int Order { get; set; }
+
+        public QuestionQuestionSetDTO()
+        {
+        }
+
+        public QuestionQuestionSetDTO(QuestionQuestionSet entity)
+        {
+            SubjectId = entity.SubjectId;
+            QuestionId = entity.QuestionId;
+            QuestionSetId = entity.QuestionSetId;
+            Order = entity.Order;
+        }
     }
 }
