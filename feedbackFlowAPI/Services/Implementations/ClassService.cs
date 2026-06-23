@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Npgsql;
+using NuGet.DependencyResolver;
+using System.Security.AccessControl;
 
 namespace feedbackFlowAPI.Services.Implementations
 {
@@ -41,138 +43,145 @@ namespace feedbackFlowAPI.Services.Implementations
 
         public async Task<ClassStatisticsDTO> GetStatistics(int ClassId, int QuestionSetId)
         {
-            try
+
+            var rawData = await _context.StudentResults
+                .AsNoTracking()
+                .Where(sr => sr.Student.StudentClasses.Any(sc => sc.Id == ClassId))
+                .Where(sr => sr.QuestionSetId == QuestionSetId)
+                .Select(sr => new
+                {
+                    Student = sr.Student,
+                    TeacherPoint = sr.TeacherPoint,
+                    ExamType = sr.Question.ExamType,
+                    Subject = sr.QuestionSet.Questions
+                                    .First(q => q.QuestionId == sr.QuestionId).Subject,
+                    Question = sr.QuestionSet.Questions
+                                    .First(q => q.QuestionId == sr.QuestionId)
+                })
+                .ToListAsync();
+
+            var digital = rawData.Where(x => x.ExamType == ExamType.Digital).ToList();
+            var analog = rawData.Where(x => x.ExamType == ExamType.Analog).ToList();
+
+            List<StudentsScore> StudentsScoreAssignments = rawData
+                .Select(sr => new StudentsScore(
+                    User: new UserDTO(sr.Student),
+                    Question: new QuestionQuestionSetDTO(sr.Question),
+                    Score: sr.TeacherPoint  ?? 0
+                    ))
+                .ToList();
+
+            #region ClassAvgScore
+            double ClassAvgScoreCombined = Math.Round(rawData
+                .Average(s => s.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+
+            double ClassAvgScoreDigital = Math.Round(digital
+                .Average(sr => sr.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+
+            double ClassAvgScoreAnalog = Math.Round(analog
+                .Average(sr => sr.TeacherPoint)
+                .GetValueOrDefault(0.0), 2);
+            #endregion
+
+
+            #region ClassAvgSubjectScore
+            var ClassAvgSubjectScoreCombined = rawData
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScoreCombined(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var ClassAvgSubjectScoreDigital = digital
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScore(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    ExamType: group.First().ExamType,
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var ClassAvgSubjectScoreAnalog = analog
+                .GroupBy(x => x.Subject.Id)
+                .Select(group => new SubjectScore(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    ExamType: group.First().ExamType,
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            #endregion
+
+
+            #region StudentsAvgScore
+            var StudentsAvgScoreCombined = rawData
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var StudentsAvgScoreDigital = digital
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+
+            var StudentsAvgScoreAnalog = analog
+                .GroupBy(x => x.Student)
+                .Select(group => new StudentScore(
+                    User: new UserDTO(group.Key),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .ToList();
+            #endregion
+
+
+            #region StudentAvgSccoreSubject
+            var StudentsAvgScoreSubject = rawData
+                    .GroupBy(x => new { x.Subject.Id, x.Student })
+                    .Select(group => new StudentsAvgScoreSubject(
+                        User: new UserDTO(group.Key.Student),
+                        Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                        Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                    ))
+                    .ToList();
+            #endregion
+
+
+            #region WeakestSubjects
+            var WeakestSubjects = rawData
+                .GroupBy(x => x.Subject)
+                .Select(group => new WeakSubject(
+                    Subject: new SubjectDTO(group.First().Subject.Id, group.First().Subject.Name),
+                    Score: group.Average(x => x.TeacherPoint) ?? 0.0
+                ))
+                .OrderByDescending(x => x.Score)
+                .ToList();
+                
+            #endregion
+
+            return new ClassStatisticsDTO
             {
-                //Class res = await _context.Classes
-                //    .Where(c => c.Id == ClassId)
-                //    .Include(thisClass => thisClass.Students)
-                //    .ThenInclude(user => user.StudentResults.Where(res => res.QuestionSetId == QuestionSetId)
-                //    //.ThenInclude(studentResults => studentResults.QuestionSet)
-                //    .FirstOrDefaultAsync();
-
-
-                var res = await _context.Classes
-                    .Where(c => c.Id == ClassId)
-                    .SelectMany(c => c.Students)
-                    .Include(s => s.StudentResults)
-                    //.ThenInclude(sr => sr.QuestionSet.Questions)
-                    //.ThenInclude(q => q.Subject)
-                    //.SelectMany(s => s.StudentResults.Where(sr => sr.QuestionSetId == QuestionSetId))
-                    //.SelectMany(sr => sr.QuestionSet.Questions
-                    //    .Select(q => new
-                    //    {
-                    //        SubjectId = q.Subject.Id,
-                    //        SubjectName = q.Subject.Name,
-                    //        TeacherPoint = sr.TeacherPoint
-                    //    }))
-                    //.GroupBy(x => new { x.SubjectId, x.SubjectName })
-                    //.Select(g => new SubjectScoreCombined
-                    //(
-                    //    Subject: new SubjectDTO { Id = g.Key.SubjectId, Name = g.Key.SubjectName },
-                    //    Score: g.Average(x => x.TeacherPoint) ?? 0.0
-                    //))
-                    .ToListAsync();
-
-                var str = "";
-
-
-                ClassStatisticsDTO? ress = await _context.Classes
-                    .Where(c => c.Id == ClassId)
-                    .Select(thisClass => new
-                    {
-                        Class = thisClass,
-                        FilteredStudents = thisClass.Students.Select(student => new
-                        {
-                            Student = student,
-                            FilteredResults = student.StudentResults
-                                .Where(sr => sr.QuestionSetId == QuestionSetId)
-                                .ToList()
-                        })
-                    })
-                    .Select(thisClass => new ClassStatisticsDTO
-                    {
-                        ClassAvgScoreCombined = thisClass.FilteredStudents
-                                .SelectMany(student => student.FilteredResults.Select(studentResults => studentResults.TeacherPoint)
-                                ).Average() ?? 0.0,
-                        ClassAvgScoreAnalog = thisClass.FilteredStudents
-                                .SelectMany(students => students.FilteredResults
-                                    .Where(studentResults => studentResults.Question.ExamType == ExamType.Analog)
-                                    .Select(studentResults => studentResults.TeacherPoint)
-                                ).Average() ?? 0.0,
-                        ClassAvgScoreDigital = thisClass.FilteredStudents
-                                .SelectMany(students => students.FilteredResults
-                                    .Where(studentResults => studentResults.Question.ExamType == ExamType.Digital)
-                                    .Select(studentResults => studentResults.TeacherPoint)
-                                ).Average() ?? 0.0,
-
-
-                        ClassAvgSubjectScoreCombined = thisClass.FilteredStudents
-                                .SelectMany(student => student.FilteredResults
-                                    .SelectMany(studentResult => studentResult.QuestionSet.Questions
-                                        .Select(question => new
-                                        {
-                                            SubjectId = question.Subject.Id,
-                                            SubjectName = question.Subject.Name,
-                                            studentResult.TeacherPoint,
-                                        })))
-                                .GroupBy(x => new { x.SubjectId, x.SubjectName })
-                                .Select(g => new SubjectScoreCombined
-                                (
-                                    Subject: new SubjectDTO { Id = g.Key.SubjectId, Name = g.Key.SubjectName },
-                                    g.Average(x => x.TeacherPoint) ?? 0.0
-                                ))
-                                .ToList(),
-
-                        //ClassAvgSubjectScoreAnalog = thisClass.FilteredStudents
-                        //    .SelectMany(student => student.FilteredResults
-                        //        .Select(studentResult => new
-                        //        {
-                        //            SubjectId = studentResult.QuestionSet.Questions.FirstOrDefault().Subject.Id,
-                        //            SubjectName = studentResult.QuestionSet.Questions.FirstOrDefault().Subject.Name,
-                        //            studentResult.Question.ExamType,
-                        //            studentResult.TeacherPoint,
-                        //        }))
-                        //    .Where(sr => sr.ExamType == ExamType.Analog)
-                        //    .GroupBy(x => new { x.SubjectId, x.SubjectName, x.ExamType })
-                        //    .Select(g => new SubjectScore
-                        //    (
-                        //        Subject: new SubjectDTO { Id = g.Key.SubjectId, Name = g.Key.SubjectName },
-                        //        g.Key.ExamType,
-                        //        g.Average(x => x.TeacherPoint) ?? 0.0
-                        //    ))
-                        //    .ToList(),
-
-                        //ClassAvgSubjectScoreDigital = thisClass.FilteredStudents
-                        //    .SelectMany(student => student.FilteredResults
-                        //        .Select(studentResult => new
-                        //        {
-                        //            Subject = studentResult.QuestionSet.Questions.Select(q => q.Subject).FirstOrDefault(),
-                        //            studentResult.Question.ExamType,
-                        //            studentResult.TeacherPoint,
-                        //        }))
-                        //    .Where(sr => sr.ExamType == ExamType.Analog)
-                        //    .GroupBy(x => new { x.Subject, x.ExamType })
-                        //    .Select(g => new SubjectScore
-                        //    (
-                        //        Subject: new SubjectDTO { Id = g.Key.Subject.Id, Name = g.Key.Subject.Name },
-                        //        g.Key.ExamType,
-                        //        g.Average(x => x.TeacherPoint) ?? 0.0
-                        //    ))
-                        //    .ToList()
-
-
-
-
-
-                    })
-                    .FirstOrDefaultAsync();
-
-                return null;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+                StudentsScoreAssignments = StudentsScoreAssignments,
+                ClassAvgScoreCombined = ClassAvgScoreCombined,
+                ClassAvgScoreDigital = ClassAvgScoreDigital,
+                ClassAvgScoreAnalog = ClassAvgScoreAnalog,
+                ClassAvgSubjectScoreCombined = ClassAvgSubjectScoreCombined,
+                ClassAvgSubjectScoreDigital = ClassAvgSubjectScoreDigital,
+                ClassAvgSubjectScoreAnalog = ClassAvgSubjectScoreAnalog,
+                StudentsAvgScoreCombined = StudentsAvgScoreCombined,
+                StudentsAvgScoreDigital = StudentsAvgScoreDigital,
+                StudentsAvgScoreAnalog = StudentsAvgScoreAnalog,
+                StudentsAvgScoreSubject = StudentsAvgScoreSubject,
+                WeakestSubjects = WeakestSubjects,
+            };
         }
     }
 }

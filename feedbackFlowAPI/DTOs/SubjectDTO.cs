@@ -10,4 +10,13 @@ public partial class SubjectDTO
     /// </summary>
     public int Id { get; set; }
     public string Name { get; set; } = null!;
+
+    public SubjectDTO()
+    { }
+
+    public SubjectDTO(int id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
 }

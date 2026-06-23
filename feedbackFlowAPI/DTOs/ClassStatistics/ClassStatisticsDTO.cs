@@ -7,8 +7,8 @@ namespace feedbackFlowAPI.DTOs.ClassStatistics
 
     public class ClassStatisticsDTO
     {
-        public DateTimeOffset QueryStartDate { get; set; }
-        public DateTimeOffset QueryEndDate { get; set; }
+        //public DateTimeOffset QueryStartDate { get; set; }
+        //public DateTimeOffset QueryEndDate { get; set; }
 
         public List<StudentsScore> StudentsScoreAssignments { get; set; } = new List<StudentsScore>();
 
@@ -24,7 +24,7 @@ namespace feedbackFlowAPI.DTOs.ClassStatistics
         public List<StudentScore> StudentsAvgScoreAnalog { get; set; } = new List<StudentScore>();
         public List<StudentScore> StudentsAvgScoreDigital { get; set; } = new List<StudentScore>();
 
-        public List<StudentsScoreSubject> StudentsScoreSubject { get; set; } = new List<StudentsScoreSubject>();
+        public List<StudentsAvgScoreSubject> StudentsAvgScoreSubject { get; set; } = new List<StudentsAvgScoreSubject>();
         public List<WeakSubject> WeakestSubjects { get; set; } = new List<WeakSubject>();
 
 

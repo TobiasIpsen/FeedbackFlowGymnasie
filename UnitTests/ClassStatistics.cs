@@ -1,5 +1,6 @@
 ﻿
 
+using feedbackFlowAPI.DTOs.ClassStatistics;
 using feedbackFlowAPI.Entities;
 using feedbackFlowAPI.Helpers;
 using feedbackFlowAPI.Mappers.Implementations;
@@ -7,181 +8,205 @@ using feedbackFlowAPI.Mappers.Interface;
 using feedbackFlowAPI.Services.Implementations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 
 namespace UnitTests
 {
-    public class ClassStatistics
+    public class ClassStatistics : IClassFixture<PostgreSqlTestFixture>
     {
+        private PostgreSqlTestFixture _fixture;
+        private readonly ClassStatisticsDTO _result;
 
+        public ClassStatistics(PostgreSqlTestFixture fixture)
+        {
+            _fixture = fixture;
+            _result = InitializeAsync(fixture).GetAwaiter().GetResult();
+        }
 
+        private static async Task<ClassStatisticsDTO> InitializeAsync(PostgreSqlTestFixture fixture)
+        {
+            //Arrange
+            await using var context = new FbfDbContext(fixture.DbContextOptions);
+
+            Class mathClass = await context.Classes
+                .Include(c => c.Students)
+                .ThenInclude(s => s.StudentResults)
+                .FirstAsync(c => c.Name == "Math2");
+
+            QuestionSet questionSet = await context.QuestionSets
+                .FirstAsync(q => q.Name == "Eksamenssaet 1");
+
+            IClassMapper classMapper = new ClassMapper();
+            ClassService service = new ClassService(context, classMapper);
+            
+            //Act
+            return await service.GetStatistics(mathClass.Id, questionSet.Id);
+        }
+
+        //#region Date Ranges
+        //[Fact]
+        //public async Task QueryStartDate_ShouldBe_BeforeEndDate() =>
+        //    _result.QueryStartDate.Should().BeBefore(_result.QueryEndDate);
+
+        //[Fact]
+        //public async Task QueryEndDate_ShouldBe_AfterStartDate() =>
+        //    _result.QueryEndDate.Should().BeAfter(_result.QueryStartDate);
+
+        //[Fact]
+        //public async Task QueryEndDate_ShouldNotBe_InTheFuture() =>
+        //    _result.QueryEndDate.Should().NotBeAfter(DateTime.UtcNow); 
+        //#endregion
+
+        #region ClassAvgScore
+        [Fact]
+        public async Task ClassAvgScoreCombined_ShouldBe_InValidRange() =>
+            _result.ClassAvgScoreCombined.Should().BeInRange(0, 10);
 
         [Fact]
-        public async Task Get_Class_Statistics_Includes_Correct_Information()
+        public async Task ClassAvgScoreDigital() =>
+            _result.ClassAvgScoreDigital.Should().BeInRange(0, 10);
+
+        [Fact]
+        public async Task ClassAvgScoreAnalog() =>
+            _result.ClassAvgScoreAnalog.Should().BeInRange(0, 10);
+
+        [Fact]
+        public async Task ClassAvgScoreCombined_ShouldBe_BetweenAnalogAndDigital()
         {
-            /*
-                Info needed on return:
-                - Klassens samlet score, på papir og digitalt
-                - Klassens gennemsnit score pr emne
-                - Elev gennemsnit score på papir og digitalt
-                - Top 3 svageste emner
-                - Data kan filtreres med startDate, endDate, og afleveringstype
-
-                Pseudo JSON:
-                startdate,
-                enddate,
-                studentsScoreAssignments: [{student, question, score},]
-                classAvgScoreCombined,
-                classAvgScoreAnalog,
-                classAvgScoreDigital,
-                classAvgSubjectScoreCombined: [{subject, examType score},],
-                classAvgSubjectScoreAnalog: [{subject, examType, score},],
-                classAvgSubjectScoreDigital: [{subject, examType, score},],
-                studentsAvgScoreCombined: [{student, examType, score},],
-                studentsAvgScoreAnalog: [{student, examType, score},],
-                studentsAvgScoreDigital: [{student, examType, score},],
-                studentsScoreSubject: [{student, subject, score},],
-                weakestSubjects: [{subject, avgScore},],
-            */
-
-            //Arrange
-            var options = new DbContextOptionsBuilder<FbfDbContext>()
-                .UseInMemoryDatabase(databaseName: "db_" + Guid.NewGuid())
-                .Options;
-
-            List<QuestionQuestionSet> questionQuestionSets = new List<QuestionQuestionSet>
-            {
-                new QuestionQuestionSet { Order = 1, QuestionId = 1, QuestionSetId = 1, SubjectId = 2},
-                new QuestionQuestionSet { Order = 2, QuestionId = 2, QuestionSetId = 1, SubjectId = 5},
-            };
-
-            Question q1 = new Question
-            {
-                ImgSrc = "abc/123.png",
-                Points = "10",
-                ExamType = ExamType.Analog,
-                ClassLevel = ClassLevel.A,
-                QuestionDifficulty = QuestionDifficulty.Hard,
-                QuestionMethodRequirement = QuestionMethodRequirement.NoRequirement,
-                Education = Education.HF,
-                QuestionContext = QuestionContext.YesLight,
-                StandardQuestion = StandardQuestion.Yes,
-                NewOldSystem = NewOldSystem.New,
-                CourseId = 1,
-                UserId = 1,
-                QuestionSets = questionQuestionSets
-            };
-            Question q2 = new Question
-            {
-                ImgSrc = "abc/456.png",
-                Points = "5",
-                ExamType = ExamType.Digital,
-                ClassLevel = ClassLevel.B,
-                QuestionDifficulty = QuestionDifficulty.Easy,
-                QuestionMethodRequirement = QuestionMethodRequirement.ApplyFormula,
-                Education = Education.HHX,
-                QuestionContext = QuestionContext.No,
-                StandardQuestion = StandardQuestion.WithATwist,
-                NewOldSystem = NewOldSystem.Old,
-                CourseId = 1,
-                UserId = 1,
-                QuestionSets = questionQuestionSets
-            };
-
-            UserRole admin = new UserRole { Id = 1, Name = "Admin" };
-            UserRole teacher = new UserRole { Id = 2, Name = "Teacher" };
-            UserRole student = new UserRole { Id = 3, Name = "Student" };
-
-            List<UserRole> teacherAdmin = new List<UserRole> { teacher, admin };
-            List<UserRole> studentList = new List<UserRole> { student };
-
-            List<Subject> subjects = new List<Subject>
-                {
-                    new Subject{ Name = "Combinatorics"},
-                    new Subject { Name = "Differential Calculus" },
-                    new Subject { Name = "Quadratic polynomial" },
-                    new Subject { Name = "Regression" },
-                    new Subject { Name = "Exponential function" },
-                    new Subject { Name = "Binomial distribution" },
-                };
-
-            List<User> users = new List<User>
-                {
-                    new User { Firstname = "Tobias", Lastname = "I", Email = "a@a.dk", UserRoles = teacherAdmin },
-                    new User { Firstname = "Aleksander", Lastname = "A", Email = "a@a.dk", UserRoles = studentList },
-                    new User { Firstname = "Emil", Lastname = "I", Email = "a@a.dk", UserRoles = studentList },
-                    new User { Firstname = "Bob", Lastname = "I", Email = "a@a.dk", UserRoles = studentList },
-                    new User { Firstname = "Niels", Lastname = "I", Email = "a@a.dk", UserRoles = studentList },
-                    new User { Firstname = "Niels", Lastname = "I", Email = "a@a.dk", UserRoles = studentList },
-                };
-
-            QuestionSet questionSet = new QuestionSet
-            {
-                Name = "First Question Set",
-                IsExam = false,
-                IsDraft = false,
-                //TeacherId = users.Single(u => u.Firstname == "Tobias").Id
-                TeacherId = 1,
-            };
-
-            await using (var context = new FbfDbContext(options))
-            {
-                await context.Courses.AddAsync(new Course { Name = "Math" });
-
-                await context.Questions.AddAsync(q1);
-                await context.Questions.AddAsync(q2);
-
-                await context.UserRoles.AddAsync(admin);
-                await context.UserRoles.AddAsync(teacher);
-                await context.UserRoles.AddAsync(student);
-
-                await context.Users.AddRangeAsync(users);
-                await context.Subjects.AddRangeAsync(subjects);
-
-                await context.QuestionSets.AddAsync(questionSet);
-
-                /*
-                //await context.Users.AddAsync(new User { Firstname = "Tobias", Lastname = "I", Email = "a@a.dk", UserRoles = teacherAdmin });
-                //await context.Users.AddAsync(new User { Firstname = "Aleksander", Lastname = "A", Email = "a@a.dk", UserRoles = studentList });
-                //await context.Users.AddAsync(new User { Firstname = "Emil", Lastname = "I", Email = "a@a.dk", UserRoles = studentList });
-                //await context.Users.AddAsync(new User { Firstname = "Bob", Lastname = "I", Email = "a@a.dk", UserRoles = studentList });
-                //await context.Users.AddAsync(new User { Firstname = "Niels", Lastname = "I", Email = "a@a.dk", UserRoles = studentList });
-                //await context.Users.AddAsync(new User { Firstname = "Niels", Lastname = "I", Email = "a@a.dk", UserRoles = studentList });
-
-                //await context.Subjects.AddAsync(new Subject { Name = "Combinatorics" });
-                //await context.Subjects.AddAsync(new Subject { Name = "Differential Calculus" });
-                //await context.Subjects.AddAsync(new Subject { Name = "Quadratic polynomial" });
-                //await context.Subjects.AddAsync(new Subject { Name = "Regression" });
-                //await context.Subjects.AddAsync(new Subject { Name = "Exponential function" });
-                //await context.Subjects.AddAsync(new Subject { Name = "Binomial distribution" });
-                */
-                await context.SaveChangesAsync();
-            }
-
-            var result = "null";
-
-            //Act
-            await using (var context = new FbfDbContext(options))
-            {
-                IClassMapper classMapper = new ClassMapper();
-                ClassService _service = new ClassService(context, classMapper);
-
-                //result = await _service.GetStatistics();
-            }
-
-            //Assert
-            //result.studentsScoreAssignments.Should().BeOfType<object>;
-            //result.classAvgScoreCombined.Should().BeOfType<int>;
-            //result.classAvgScoreAnalog.Should().BeOfType<int>;
-            //result.classAvgScoreDigital.Should().BeOfType<int>;
-            //result.classAvgSubjectScoreCombined.Should().BeOfType<object>;
-            //result.classAvgSubjectScoreAnalog.Should().BeOfType<object>;
-            //result.classAvgSubjectScoreDigital.Should().BeOfType<object>;
-            //result.studentsAvgScoreCombined.Should().BeOfType<object>;
-            //result.studentsAvgScoreAnalog.Should().BeOfType<object>;
-            //result.studentsAvgScoreDigital.Should().BeOfType<object>;
-            //result.studentsScoreSubject.Should().BeOfType<object>;
-            //result.weakestSubjects.Should().BeOfType<object>;
+            var min = Math.Min(_result.ClassAvgScoreDigital, _result.ClassAvgScoreAnalog);
+            var max = Math.Max(_result.ClassAvgScoreDigital, _result.ClassAvgScoreAnalog);
+            _result.ClassAvgScoreCombined.Should().BeInRange(min, max);
         }
+        #endregion
+
+        #region Lists
+        [Fact]
+        public async Task AllLists_ShouldNotBeNull()
+        {
+            _result.StudentsScoreAssignments.Should().NotBeNull();
+            _result.ClassAvgSubjectScoreCombined.Should().NotBeNull();
+            _result.ClassAvgSubjectScoreAnalog.Should().NotBeNull();
+            _result.ClassAvgSubjectScoreDigital.Should().NotBeNull();
+            _result.StudentsAvgScoreCombined.Should().NotBeNull();
+            _result.StudentsAvgScoreAnalog.Should().NotBeNull();
+            _result.StudentsAvgScoreDigital.Should().NotBeNull();
+            _result.StudentsAvgScoreSubject.Should().NotBeNull();
+            _result.WeakestSubjects.Should().NotBeNull();
+        } 
+
+        #region StudentScoreAssignments
+        [Fact]
+        public async Task StudentScoreAssignments_Items_ShouldHaveValidTypes() =>
+            _result.StudentsScoreAssignments.Should().AllBeOfType<StudentsScore>();
+
+        [Fact]
+        public async Task StudentsScoreAssignments_Scores_ShouldBe_InValidRange() =>
+            _result.StudentsScoreAssignments.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        [Fact]
+        public async Task StudentsScoreAssignments_ShouldHaveNo_NullUsers() =>
+            _result.StudentsScoreAssignments.Should().OnlyContain(s => s.User != null);
+
+        [Fact]
+        public async Task StudentsScoreAssignments_ShouldHaveNo_NullQuestions() =>
+            _result.StudentsScoreAssignments.Should().OnlyContain(s => s.Question != null);
+        #endregion
+
+
+        # region ClassAvgSubjectScore
+        [Fact]
+        public async Task ClassAvgSubjectScoreCombined_Items_ShouldHaveValidTypes() =>
+            _result.ClassAvgSubjectScoreCombined.Should().AllBeOfType<SubjectScoreCombined>();
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreDigital_Items_ShouldHaveValidTypes() =>
+            _result.ClassAvgSubjectScoreDigital.Should().AllBeOfType<SubjectScore>();
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreAnalog_Items_ShouldHaveValidTypes() =>
+            _result.ClassAvgSubjectScoreAnalog.Should().AllBeOfType<SubjectScore>();
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreCombined_Scores_ShouldBe_InValidRange() =>
+            _result.ClassAvgSubjectScoreCombined.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreDigital_Scores_ShouldBe_InValidRange() =>
+            _result.ClassAvgSubjectScoreDigital.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreAnalog_Scores_ShouldBe_InValidRange() =>
+            _result.ClassAvgSubjectScoreAnalog.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreCombined_ShouldHaveNo_NullSubjects() =>
+            _result.ClassAvgSubjectScoreCombined.Should().OnlyContain(s => s.Subject != null);
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreDigital_ShouldHaveNo_NullSubjects() =>
+            _result.ClassAvgSubjectScoreDigital.Should().OnlyContain(s => s.Subject != null);
+
+        [Fact]
+        public async Task ClassAvgSubjectScoreAnalog_ShouldHaveNo_NullSubjects() =>
+            _result.ClassAvgSubjectScoreAnalog.Should().OnlyContain(s => s.Subject != null);
+        #endregion
+
+
+        # region StudentsAvgScore
+        public async Task StudentsAvgScoreCombined_Items_ShouldHaveValidTypes() =>
+            _result.StudentsAvgScoreCombined.Should().AllBeOfType<StudentScore>();
+
+        public async Task StudentsAvgScoreDigital_Items_ShouldHaveValidTypes() =>
+            _result.StudentsAvgScoreDigital.Should().AllBeOfType<StudentScore>();
+
+        public async Task StudentsAvgScoreAnalog_Items_ShouldHaveValidTypes() =>
+            _result.StudentsAvgScoreAnalog.Should().AllBeOfType<StudentScore>();
+
+        public async Task StudentsAvgScoreCombined_Scores_ShouldBe_InValidRange() =>
+            _result.StudentsAvgScoreCombined.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        public async Task StudentsAvgScoreDigital_Scores_ShouldBe_InValidRange() =>
+            _result.StudentsAvgScoreDigital.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        public async Task StudentsAvgScoreAnalog_Scores_ShouldBe_InValidRange() =>
+            _result.StudentsAvgScoreAnalog.Should().OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+        #endregion
+
+
+        #region StudentScoreSubject
+        public async Task StudentsScoreSubject_Items_ShouldHaveValidTypes() =>
+            _result.StudentsAvgScoreSubject.Should().AllBeOfType<StudentsAvgScoreSubject>();
+
+        public async Task StudentsScoreSubject_Scores_ShouldBe_InValidRange() =>
+            _result.StudentsAvgScoreSubject.Should()
+                .OnlyContain(s => s.Score >= 0 && s.Score <= 10);
+
+        public async Task StudentsScoreSubject_ShouldHaveNo_NullUsersOrSubjects() =>
+            _result.StudentsAvgScoreSubject.Should()
+                .OnlyContain(s => s.User != null && s.Subject != null);
+        #endregion
+
+
+        #region WeakestSubject
+        public async Task WeakestSubjects_Items_ShouldHaveValidTypes() =>
+            _result.WeakestSubjects.Should().AllBeOfType<WeakSubject>();
+
+        public async Task WeakestSubjects_Scores_ShouldBe_InValidRange() =>
+            _result.WeakestSubjects.Should().OnlyContain(w => w.Score >= 0 && w.Score <= 10);
+
+        public async Task WeakestSubjects_ShouldHaveNo_NullSubjects() =>
+            _result.WeakestSubjects.Should().OnlyContain(w => w.Subject != null);
+
+        public async Task WeakestSubjects_ShouldBe_SortedAscending() => //Weakest score first
+            _result.WeakestSubjects.Should().BeInAscendingOrder(w => w.Score);
+
+        public async Task WeakestSubjects_ShouldNotHaveDuplicateSubjects() =>
+            _result.WeakestSubjects.Select(w => w.Subject.Id).Should().OnlyHaveUniqueItems();
+
+        public async Task WeakestSubjects_Scores_ShouldBe_AtOrBelowClassAverage() =>
+            _result.WeakestSubjects.Should().OnlyContain(w => w.Score <= _result.ClassAvgScoreCombined);
+        #endregion
+        #endregion
     }
 }
