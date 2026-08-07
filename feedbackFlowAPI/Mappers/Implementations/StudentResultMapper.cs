@@ -24,7 +24,7 @@ namespace feedbackFlowAPI.Mappers.Implementations
             };
         }
 
-        public TeacherFeedbackDTO ToDTO(StudentResult entity)
+        public TeacherFeedbackDTO ToTeacherFeedbackDTO(StudentResult entity)
         {
             return new TeacherFeedbackDTO
             {
@@ -34,7 +34,7 @@ namespace feedbackFlowAPI.Mappers.Implementations
             };
         }
 
-        public StudentResultDTO StudentResultToDTO(StudentResult entity)
+        public StudentResultDTO ToStudentResultDTO(StudentResult entity)
         {
             return new StudentResultDTO
             {

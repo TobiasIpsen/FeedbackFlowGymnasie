@@ -7,7 +7,7 @@ namespace feedbackFlowAPI.Mappers.Interface
     public interface IStudentResultMapper
     {
         public StudentResult ToEntity(TeacherFeedbackDTO dto, int studentId, int questionSetId, int questionId);
-        public TeacherFeedbackDTO ToDTO(StudentResult entity);
-        public StudentResultDTO StudentResultToDTO(StudentResult entity);
+        public TeacherFeedbackDTO ToTeacherFeedbackDTO(StudentResult entity);
+        public StudentResultDTO ToStudentResultDTO(StudentResult entity);
     }
 }

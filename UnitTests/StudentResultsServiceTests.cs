@@ -48,7 +48,7 @@ namespace UnitTests
                 .Returns(entity);
 
             _mapperMock
-                .Setup(m => m.ToDTO(It.IsAny<StudentResult>()))
+                .Setup(m => m.ToTeacherFeedbackDTO(It.IsAny<StudentResult>()))
                 .Returns(new TeacherFeedbackDTO { TeacherId = 1 });
 
             var result = await _service.SaveTeacherFeedbackAsync(5, 10, 20, dto);

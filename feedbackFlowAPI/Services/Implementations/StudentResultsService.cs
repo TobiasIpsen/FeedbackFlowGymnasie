@@ -49,7 +49,7 @@ namespace feedbackFlowAPI.Services.Implementations
 
             _logger.LogInformation("Teacher feedback created");
 
-            return _mapper.ToDTO(result.Entity);
+            return _mapper.ToTeacherFeedbackDTO(result.Entity);
         }
 
         public async Task<List<MistakeTypeDTO>> GetMistakeTypesAsync()
@@ -144,7 +144,7 @@ namespace feedbackFlowAPI.Services.Implementations
 
             res.StudentSelfAssessmentPoints = selfAssessmentPoint.points;
             await _context.SaveChangesAsync();
-            return _mapper.StudentResultToDTO(res);
+            return _mapper.ToStudentResultDTO(res);
         }
     }
 }
