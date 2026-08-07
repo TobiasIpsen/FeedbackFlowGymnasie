@@ -8,9 +8,6 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace UnitTests
 {
@@ -20,7 +17,6 @@ namespace UnitTests
         private readonly Mock<ILogger<Program>> _loggerMock;
         private readonly FbfDbContext _context;
         private readonly StudentResultsService _service;
-
 
         public StudentResultsServiceTests()
         {
