@@ -14,7 +14,7 @@ namespace UnitTests
     public class StudentResultsServiceTests
     {
         private readonly Mock<IStudentResultMapper> _mapperMock;
-        private readonly Mock<ILogger<Program>> _loggerMock;
+        private readonly Mock<ILogger<StudentResultsService>> _loggerMock;
         private readonly FbfDbContext _context;
         private readonly StudentResultsService _service;
 
@@ -26,7 +26,7 @@ namespace UnitTests
             _context = new FbfDbContext(options);
 
             _mapperMock = new Mock<IStudentResultMapper>();
-            _loggerMock = new Mock<ILogger<Program>>();
+            _loggerMock = new Mock<ILogger<StudentResultsService>>();
             _service = new StudentResultsService(_loggerMock.Object, _context, _mapperMock.Object);
         }
 

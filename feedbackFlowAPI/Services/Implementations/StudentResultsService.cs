@@ -13,16 +13,17 @@ namespace feedbackFlowAPI.Services.Implementations
     {
         private FbfDbContext _context;
         private readonly IStudentResultMapper _mapper;
-        private ILogger<Program> _logger;
+        private ILogger<StudentResultsService> _logger;
 
-        public StudentResultsService(ILogger<Program> logger, FbfDbContext context, IStudentResultMapper mapper)
+        public StudentResultsService(ILogger<StudentResultsService> logger, FbfDbContext context, IStudentResultMapper mapper)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<TeacherFeedbackDTO> SaveTeacherFeedbackAsync(int studentId, int questionSetId, int questionId, TeacherFeedbackDTO dto)
+        public async Task<TeacherFeedbackDTO> SaveTeacherFeedbackAsync(
+            int studentId, int questionSetId, int questionId, TeacherFeedbackDTO dto)
         {
 
             bool alreadyExists = await _context.StudentResults.AnyAsync(r =>
