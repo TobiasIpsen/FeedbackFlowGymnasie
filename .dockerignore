@@ -24,7 +24,7 @@ dist/
 build/
 out/
 **bin/
-# **obj/
+**obj/
 **/*.user
 **/*.suo
 **/*.cache

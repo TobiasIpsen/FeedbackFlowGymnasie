@@ -9,7 +9,7 @@ COPY ./feedbackFlowAPI .
 RUN dotnet publish "feedbackFlowAPI.csproj" --output /app/publish
 
 # Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 RUN addgroup -S dockergroup && adduser -S dockeruser -G dockergroup
 USER dockeruser
 WORKDIR /app
