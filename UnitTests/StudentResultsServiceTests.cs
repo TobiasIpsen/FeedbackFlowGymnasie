@@ -31,7 +31,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task SaveTeacherFeedbackAsync()
+        public async Task SaveTeacherFeedbackAsync_ReturnsTeacherFeedbackDTO()
         {
             TeacherFeedbackDTO dto = new TeacherFeedbackDTO { TeacherId = 1 };
 
@@ -55,8 +55,57 @@ namespace UnitTests
 
             result.Should().NotBeNull();
             result.TeacherId.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task SaveTeacherFeedbackAsync_CallsMapperWithCorrectArguments()
+        {
+            TeacherFeedbackDTO dto = new TeacherFeedbackDTO { TeacherId = 1 };
+
+            StudentResult entity = new StudentResult
+            {
+                StudentId = 5,
+                QuestionSetId = 10,
+                QuestionId = 20,
+                TeacherId = 1,
+            };
+
+            _mapperMock
+                .Setup(m => m.ToEntity(dto, 5, 10, 20))
+                .Returns(entity);
+
+            _mapperMock
+                .Setup(m => m.ToTeacherFeedbackDTO(It.IsAny<StudentResult>()))
+                .Returns(new TeacherFeedbackDTO { TeacherId = 1 });
+
+            var result = await _service.SaveTeacherFeedbackAsync(5, 10, 20, dto);
 
             _mapperMock.Verify(m => m.ToEntity(dto, 5, 10, 20), Times.Once);
+            _mapperMock.Verify(m => m.ToTeacherFeedbackDTO(It.IsAny<StudentResult>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SaveTeacherFeedbackAsync_PersistsEntityToDatabase()
+        {
+            TeacherFeedbackDTO dto = new TeacherFeedbackDTO { TeacherId = 1 };
+
+            StudentResult entity = new StudentResult
+            {
+                StudentId = 5,
+                QuestionSetId = 10,
+                QuestionId = 20,
+                TeacherId = 1,
+            };
+
+            _mapperMock
+                .Setup(m => m.ToEntity(dto, 5, 10, 20))
+                .Returns(entity);
+
+            _mapperMock
+                .Setup(m => m.ToTeacherFeedbackDTO(It.IsAny<StudentResult>()))
+                .Returns(new TeacherFeedbackDTO { TeacherId = 1 });
+
+            var result = await _service.SaveTeacherFeedbackAsync(5, 10, 20, dto);
 
             var dbItemsCount = await _context.StudentResults.CountAsync();
             dbItemsCount.Should().Be(1);

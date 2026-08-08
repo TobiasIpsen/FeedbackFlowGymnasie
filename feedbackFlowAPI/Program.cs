@@ -29,13 +29,14 @@ namespace feedbackFlowAPI
 
             builder.Logging.AddOpenTelemetry(options =>
             {
+                options.ParseStateValues = true;
+                options.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+
                 options
                     .SetResourceBuilder(
                         ResourceBuilder.CreateDefault().AddService(serviceName));
                 options.AddOtlpExporter();
-                options.ParseStateValues = true;
-                options.IncludeScopes = true;
-                options.IncludeFormattedMessage = true;
             });
             builder.Services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource.AddService(serviceName))
