@@ -14,5 +14,4 @@ RUN addgroup -S dockergroup && adduser -S dockeruser -G dockergroup
 USER dockeruser
 WORKDIR /app
 COPY --from=build /app/publish .
-# RUN chown -R dockeruser:dockergroup /app
 ENTRYPOINT [ "dotnet", "feedbackFlowAPI.dll" ]
